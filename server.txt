@@ -1,0 +1,6 @@
+gamePort = 56777
+chatPort = 56888
+chatGreeting = I am new here
+chatQuitting = I am out
+maxNumberOfMessages = 30
+turnirTime = 30
