@@ -28,6 +28,7 @@ public class GameWorker {
     private Map<Channel, Player> playerMap = new HashMap<>();
     private Map<Future, Channel> finders = new WeakHashMap<>();
     private ExecutorService service;
+    private Map<Channel, GameThread> gameThreadMap = new HashMap<>();
 
     private GameWorker() {
         service = Executors.newFixedThreadPool(10);
@@ -84,12 +85,21 @@ public class GameWorker {
                 }
                 break;
                 case MessageType.C_READY_TO_PLAY: {
+                    GameThread gameThread = gameThreadMap.get(channel);
+                    if (gameThread != null) {
+                        gameThread.setPlayerReady(channel);
+                        if (gameThread.isAllReady())
+                            new Thread(gameThread).start();//запускам игру, оба игрока готовы
+                    }
+
                 }
                 break;
                 case MessageType.C_LINE_MOVE: {
+                    gameThreadMap.get(channel).playerMove(channel, root);
                 }
                 break;
                 case MessageType.C_OK: {
+                    gameThreadMap.get(channel).playerOk(channel, root);
                 }
                 break;
             }
@@ -99,6 +109,12 @@ public class GameWorker {
     public Map<Channel, Player> getPlayerMap() {
         synchronized (playerMap) {
             return playerMap;
+        }
+    }
+
+    public void addGameThreadForChannel(Channel channel, GameThread gameThread) {
+        synchronized (gameThreadMap) {
+            gameThreadMap.put(channel, gameThread);
         }
     }
 }

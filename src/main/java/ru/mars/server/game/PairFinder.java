@@ -30,7 +30,11 @@ public class PairFinder implements Runnable {
                         if (diff <= maxDiff) {
                             //пара найдена, разница в уровенях около 1
 //                            new Thread(new GameThread(playerChannel, channel, player, p)).start();
-                            channel.write(MessageFactory.createPairFoundMessage());
+                            playerChannel.write(MessageFactory.createPairFoundMessage());
+                            GameThread gameThread = new GameThread(playerChannel, channel, player, p);
+                            //добавляем для каналов игру
+                            GameWorker.getInstance().addGameThreadForChannel(playerChannel, gameThread);
+                            GameWorker.getInstance().addGameThreadForChannel(channel, gameThread);
                             return;
                         }
                     }
