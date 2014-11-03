@@ -15,6 +15,10 @@ public class Player {
     private Integer armor;//посылать другому
     private Integer minDamage;
     private Integer maxDamage;
+    private boolean inGame = false;
+
+    public Player() {
+    }
 
     public String getName() {
         return name;
@@ -94,5 +98,13 @@ public class Player {
 
     public void setMaxDamage(Integer maxDamage) {
         this.maxDamage = maxDamage;
+    }
+
+    public boolean isInGame() {
+        return inGame;
+    }
+
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
     }
 }

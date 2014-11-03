@@ -1,9 +1,21 @@
 package ru.mars.server.game;
 
 import org.apache.log4j.Logger;
+import org.jboss.netty.channel.Channel;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import ru.mars.server.network.message.MessageFactory;
+import ru.mars.server.network.message.MessageType;
+import ru.mars.server.parser.PlayerParser;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Date: 01.11.14
@@ -11,20 +23,82 @@ import java.util.List;
  */
 public class GameWorker {
     private static GameWorker instance = new GameWorker();
-    private List<Player> players = new LinkedList<>();
     private Logger logger = Logger.getLogger(this.getClass());
+    private Map<Channel, GameState> gameStateMap = new HashMap<>();
+    private Map<Channel, Player> playerMap = new HashMap<>();
+    private Map<Future, Channel> finders = new WeakHashMap<>();
+    private ExecutorService service;
+
+    private GameWorker() {
+        service = Executors.newFixedThreadPool(10);
+    }
 
     public static GameWorker getInstance() {
         return instance;
     }
 
-    public synchronized void addPlayer(String... params) {
+    public synchronized void addPlayer(Channel channel) {
+        gameStateMap.put(channel, GameState.LOGIN);
+        playerMap.put(channel, new Player());
     }
 
-    public synchronized void removePlayer(String... params) {
+    public synchronized void removePlayer(Channel channel) {
+        gameStateMap.remove(channel);
+        playerMap.remove(channel);
     }
 
-    public synchronized void handlePlayerCommand(String xml) {
-        logger.info("Received xml = " + xml);
+    public synchronized void handlePlayerCommand(Channel channel, String xml) {
+        logger.info("Received xml = " + xml + " from channel " + channel.toString());
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = null;
+        Document doc = null;
+        try {
+            dBuilder = dbFactory.newDocumentBuilder();
+            doc = dBuilder.parse(xml);
+            doc.getDocumentElement().normalize();
+        } catch (Exception e) {
+            logger.error("Unable to parse xml", e);
+        }
+
+        if (doc != null) {
+            Element root = doc.getDocumentElement();
+            Integer command = 0;//TODO:
+            switch (command) {
+                case MessageType.C_PLAYER_INFO: {
+                    if (!gameStateMap.get(channel).equals(GameState.LOGIN))
+                        return;//TODO: exception?
+                    PlayerParser.parse(playerMap.get(channel), root);
+                    gameStateMap.put(channel, GameState.LOGGED_IN);
+                    channel.write(MessageFactory.createWaitMessage());
+                    PairFinder pairFinder = new PairFinder(channel, playerMap.get(channel));
+                    finders.put(service.submit(pairFinder), channel);
+                }
+                break;
+                case MessageType.C_PLAYER_CANCEL_WAIT: {
+                    if (!gameStateMap.get(channel).equals(GameState.LOGGED_IN))
+                        return;//TODO: exception?
+                    channel.write(MessageFactory.createGameOverMessage());
+                    for (Future pairFinder : finders.keySet())
+                        if (finders.get(pairFinder).equals(channel))
+                            pairFinder.cancel(true);//стопаем поиск пары если игрок отказался
+                }
+                break;
+                case MessageType.C_READY_TO_PLAY: {
+                }
+                break;
+                case MessageType.C_LINE_MOVE: {
+                }
+                break;
+                case MessageType.C_OK: {
+                }
+                break;
+            }
+        }
+    }
+
+    public Map<Channel, Player> getPlayerMap() {
+        synchronized (playerMap) {
+            return playerMap;
+        }
     }
 }
