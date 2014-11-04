@@ -48,6 +48,8 @@ public class PairFinder implements Runnable {
                 Logger.getLogger(this.getClass()).error("Interrupted while sleeping", e);
             }
             maxDiff++;
+            if (maxDiff > 2)
+                maxDiff = 1;
         }
     }
 }
