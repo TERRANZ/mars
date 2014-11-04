@@ -177,6 +177,91 @@ public class GameThread implements Runnable {
         gemArray[count][0] = el0;
     }
 
+    private Boolean tryCheckVLine5() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int count= (gemArray[i][j]);
+                if (j + 4 <= 7) {
+                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3] && count == gemArray[i][j + 4]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private Boolean tryCheckVLine4() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int count= (gemArray[i][j]);
+                if (j + 3 <= 7) {
+                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private Boolean tryCheckVLine3() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int count= (gemArray[i][j]);
+                if (j + 2 <= 7) {
+                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private Boolean tryCheckHLine5() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                //trace(i, j)
+                int count= (gemArray[i][j]);
+                if (i + 4 <= 7) {
+                    if (count == gemArray[i+1][j] && count == gemArray[i+2][j] && count == gemArray[i+3][j] && count == gemArray[i+4][j]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private Boolean tryCheckHLine4() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int count= (gemArray[i][j]);
+                if (i + 3 <= 7) {
+                    if (count == gemArray[i+1][j] && count == gemArray[i+2][j] && count == gemArray[i+3][j]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private Boolean tryCheckHLine3() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int count= (gemArray[i][j]);
+                if (i + 2 <= 7) {
+                    if (count == gemArray[i+1][j] && count == gemArray[i+2][j]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Returns a pseudo-random number between min and max, inclusive.
      * The difference between min and max can be at most
