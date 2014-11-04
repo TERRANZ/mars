@@ -158,9 +158,23 @@ public class GameThread implements Runnable {
     }
 
     private void moveLineUp(int count) {
+        int el0 = gemArray[count][0];
+        for (int i = 0; i < 8; i++) {
+            if (i != 0) {
+                gemArray[count][i - 1] = gemArray[count][i];
+            }
+        }
+        gemArray[count][7] = el0;
     }
 
     private void moveLineDown(int count) {
+        int el0 = gemArray[count][7];
+        for (int i = 7; i >= 0; i--) {
+            if (i != 7) {
+                gemArray[count][i + 1] = gemArray[count][i];
+            }
+        }
+        gemArray[count][0] = el0;
     }
 
     /**
