@@ -138,10 +138,9 @@ public class GameThread implements Runnable {
     }
 
     private void moveLineLeft(int count) {
-        int el0 = 42 * 8;
+        int el0 = gemArray[0][count];
         for (int i = 0; i < 8; i++) {
-            if (i == 0) {
-            } else {
+            if (i != 0) {
                 gemArray[i - 1][count] = gemArray[i][count];
             }
         }
