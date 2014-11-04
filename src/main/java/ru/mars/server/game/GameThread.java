@@ -21,7 +21,7 @@ public class GameThread implements Runnable {
 
     private Channel channel1, channel2;
     private Player player1, player2;
-    private int[][] map = new int[8][8];
+    private int[][] gemArray = new int[8][8];
     private Map<Channel, Boolean> playerReady = new HashMap<>();
     private volatile boolean game = true;
     private Logger logger = Logger.getLogger(this.getClass());
@@ -48,13 +48,13 @@ public class GameThread implements Runnable {
 
     private void sendGameStateToPlayers() {
         StringBuilder sbMap = new StringBuilder();
-        sbMap.append("<map>");
+        sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
             sbMap.append("<line");
             sbMap.append(i);
             sbMap.append(">");
             for (int j = 0; j < 8; j++) {
-                sbMap.append(map[i][j]);
+                sbMap.append(gemArray[i][j]);
                 sbMap.append(",");
             }
             sbMap.delete(sbMap.length() - 1, sbMap.length());
@@ -62,7 +62,7 @@ public class GameThread implements Runnable {
             sbMap.append(i);
             sbMap.append(">");
         }
-        sbMap.append("</map>");
+        sbMap.append("</gemArray>");
         StringBuilder sbFistMove = new StringBuilder();
         sbFistMove.append("<first>");
         sbFistMove.append(new Date().getTime() % 2 == 0 ? 2 : 1);
@@ -86,11 +86,11 @@ public class GameThread implements Runnable {
     private void initMap() {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
-                map[i][j] = 0;
+                gemArray[i][j] = 0;
     }
 
     public int[][] getMap() {
-        return map;
+        return gemArray;
     }
 
     public synchronized void setPlayerReady(Channel playerChannel) {
@@ -114,15 +114,19 @@ public class GameThread implements Runnable {
         logger.info("Player " + player + " doing move : " + moveDir + " line = " + moveLine);
         switch (moveDir) {
             case "l": {
+                moveLineLeft(moveLine);
             }
             break;
             case "r": {
+                moveLineRight(moveLine);
             }
             break;
             case "u": {
+                moveLineUp(moveLine);
             }
             break;
             case "d": {
+                moveLineDown(moveLine);
             }
             break;
         }
@@ -130,5 +134,25 @@ public class GameThread implements Runnable {
 
     public synchronized void playerOk(Channel channel, Element root) {
 
+    }
+
+    private void moveLineLeft(int count) {
+        int el0 = 42 * 8;
+        for (int i = 0; i < 8; i++) {
+            if (i == 0) {
+            } else {
+                gemArray[i - 1][count] = gemArray[i][count];
+            }
+        }
+        gemArray[7][count] = el0;
+    }
+
+    private void moveLineRight(int count) {
+    }
+
+    private void moveLineUp(int count) {
+    }
+
+    private void moveLineDown(int count) {
     }
 }
