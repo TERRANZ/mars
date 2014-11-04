@@ -5,19 +5,19 @@ package ru.mars.server.game;
  * Time: 14:34
  */
 public class Player {
-    private String name;//посылать другому
-    private Integer level;//посылать другому
-    private Integer strength;
-    private Integer constitution; //посылать другому * 10 = здоровье
-    private Integer agility;
-    private Integer lucky;
-    private Integer weapon;//посылать другому
-    private Integer armor;//посылать другому
-    private Integer minDamage;
-    private Integer maxDamage;
+    private String name = "";//посылать другому
+    private Integer level = 0;//посылать другому
+    private Integer strength = 0;
+    private Integer constitution = 0; //посылать другому * 10 = здоровье
+    private Integer agility = 0;
+    private Integer lucky = 0;
+    private Integer weapon = 0;//посылать другому
+    private Integer armor = 0;//посылать другому
+    private Integer minDamage = 0;
+    private Integer maxDamage = 0;
     private boolean inGame = false;
-    private Integer health;//посылать другому
-    private Integer defence;//посылать другому
+    private Integer health = 0;//посылать другому
+    private Integer defence = 0;//посылать другому
 
     public Player() {
     }
