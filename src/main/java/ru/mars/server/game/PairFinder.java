@@ -35,6 +35,8 @@ public class PairFinder implements Runnable {
                             //добавляем для каналов игру
                             GameWorker.getInstance().addGameThreadForChannel(playerChannel, gameThread);
                             GameWorker.getInstance().addGameThreadForChannel(channel, gameThread);
+                            GameWorker.getInstance().setPlayerState(playerChannel, GameState.GAME_LOADING);
+                            GameWorker.getInstance().setPlayerState(channel, GameState.GAME_LOADING);
                             return;
                         }
                     }

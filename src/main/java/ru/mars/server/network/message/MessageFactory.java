@@ -6,20 +6,20 @@ package ru.mars.server.network.message;
  */
 public class MessageFactory {
 
-    private static String header(int msgId) {
+    public static String header(int msgId) {
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
-        sb.append("<a>");
+        sb.append("<msg>");
         sb.append("<id>");
         sb.append(msgId);
         sb.append("</id");
         return sb.toString();
     }
 
-    private static String footer(String msg) {
+    public static String footer(String msg) {
         StringBuilder sb = new StringBuilder();
         sb.append(msg);
-        sb.append("</a>");
+        sb.append("</msg>");
         return sb.toString();
     }
 

@@ -78,6 +78,7 @@ public class GameWorker {
                 case MessageType.C_PLAYER_CANCEL_WAIT: {
                     if (!gameStateMap.get(channel).equals(GameState.LOGGED_IN))
                         return;//TODO: exception?
+                    gameStateMap.remove(channel);
                     channel.write(MessageFactory.createGameOverMessage());
                     for (Future pairFinder : finders.keySet())
                         if (finders.get(pairFinder).equals(channel))
@@ -85,6 +86,9 @@ public class GameWorker {
                 }
                 break;
                 case MessageType.C_READY_TO_PLAY: {
+                    if (!gameStateMap.get(channel).equals(GameState.GAME_LOADING))
+                        return;//TODO: exception?
+                    gameStateMap.put(channel, GameState.IN_GAME);
                     GameThread gameThread = gameThreadMap.get(channel);
                     if (gameThread != null) {
                         gameThread.setPlayerReady(channel);
@@ -115,6 +119,12 @@ public class GameWorker {
     public void addGameThreadForChannel(Channel channel, GameThread gameThread) {
         synchronized (gameThreadMap) {
             gameThreadMap.put(channel, gameThread);
+        }
+    }
+
+    public void setPlayerState(Channel channel, GameState gameState) {
+        synchronized (gameStateMap) {
+            gameStateMap.put(channel, gameState);
         }
     }
 }
