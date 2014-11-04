@@ -71,10 +71,11 @@ public class GameThread extends GameLogic implements Runnable {
         checkFields();
         if (isAttack) {
             //прошла атака, надо сообщить отдельно
-
+            sendAttackMessage();
         } else {
             sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
         }
+        isSecondPlayerInMove = !isSecondPlayerInMove;
     }
 
 
@@ -95,31 +96,65 @@ public class GameThread extends GameLogic implements Runnable {
             sbMap.append(">");
         }
         sbMap.append("</gemArray>");
-        StringBuilder sbFistMove = new StringBuilder();
+        StringBuilder sbFirstMove = new StringBuilder();
         if (selectMoving)
             isSecondPlayerInMove = new Date().getTime() % 2 == 0;
-        sbFistMove.append("<moveplayer>");
-        sbFistMove.append(isSecondPlayerInMove ? 2 : 1);
-        sbFistMove.append("</moveplayer>");
+        sbFirstMove.append("<moveplayer>");
+        sbFirstMove.append(isSecondPlayerInMove ? 2 : 1);
+        sbFirstMove.append("</moveplayer>");
 
         StringBuilder sb1 = new StringBuilder();
         sb1.append(MessageFactory.header(type));
         sb1.append(sbMap);
         sb1.append(PlayerParser.encode(player1));
-        sb1.append(sbFistMove);
+        sb1.append(sbFirstMove);
         sb1.append(MessageFactory.footer(""));
         channel2.write(sb1.toString());//второму игроку статы первого и карту
         StringBuilder sb2 = new StringBuilder();
         sb2.append(MessageFactory.header(type));
         sb2.append(sbMap);
         sb2.append(PlayerParser.encode(player2));
-        sb2.append(sbFistMove);
+        sb2.append(sbFirstMove);
         sb2.append(MessageFactory.footer(""));
         channel1.write(sb2.toString());//первому игроку статы второго и карту
     }
 
 
     protected void sendAttackMessage() {
+        StringBuilder sbMap = new StringBuilder();
+        sbMap.append("<gemArray>");
+        for (int i = 0; i < 8; i++) {
+            sbMap.append("<line");
+            sbMap.append(i);
+            sbMap.append(">");
+            for (int j = 0; j < 8; j++) {
+                sbMap.append(gemArray[i][j]);
+                sbMap.append(",");
+            }
+            sbMap.delete(sbMap.length() - 1, sbMap.length());
+            sbMap.append("</line");
+            sbMap.append(i);
+            sbMap.append(">");
+        }
+        sbMap.append("</gemArray>");
+        StringBuilder sbDamage = new StringBuilder();
+
+        sbDamage.append("<damage>");
+        sbDamage.append(attackDamage);
+        sbDamage.append("</damage>");
+
+        StringBuilder sb1 = new StringBuilder();
+        sb1.append(MessageFactory.header(MessageType.S_LINE_DAMAGE));
+        sb1.append(sbMap);
+        sb1.append(sbDamage);
+        sb1.append(MessageFactory.footer(""));
+        channel2.write(sb1.toString());
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append(MessageFactory.header(MessageType.S_LINE_DAMAGE));
+        sb2.append(sbMap);
+        sb2.append(sbDamage);
+        sb2.append(MessageFactory.footer(""));
+        channel1.write(sb2.toString());
     }
 
 

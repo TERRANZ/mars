@@ -242,12 +242,9 @@ public abstract class GameLogic {
                 }
             }
         }
-        if (linesFound == 0) {
-            isSecondPlayerInMove = !isSecondPlayerInMove;
-        } else {
+        if (linesFound != 0) {
             linesFound = 0;
         }
-
     }
 
     protected void doAction(int type, int bonus) {
