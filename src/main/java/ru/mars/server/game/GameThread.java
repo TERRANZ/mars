@@ -187,6 +187,7 @@ public class GameThread implements Runnable {
                 if (j + 4 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3] && count == gemArray[i][j + 4]) {
                         if (update) {
+                            gemArray[i][j] = randInt(1, 6);
                             gemArray[i][j + 1] = randInt(1, 6);
                             gemArray[i][j + 2] = randInt(1, 6);
                             gemArray[i][j + 3] = randInt(1, 6);
@@ -207,6 +208,7 @@ public class GameThread implements Runnable {
                 if (j + 3 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3]) {
                         if (remove) {
+                            gemArray[i][j] = randInt(1, 6);
                             gemArray[i][j + 1] = randInt(1, 6);
                             gemArray[i][j + 2] = randInt(1, 6);
                             gemArray[i][j + 3] = randInt(1, 6);
@@ -226,6 +228,7 @@ public class GameThread implements Runnable {
                 if (j + 2 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2]) {
                         if (remove) {
+                            gemArray[i][j] = randInt(1, 6);
                             gemArray[i][j + 1] = randInt(1, 6);
                             gemArray[i][j + 2] = randInt(1, 6);
                         }
@@ -245,6 +248,7 @@ public class GameThread implements Runnable {
                 if (i + 4 <= 7) {
                     if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j] && count == gemArray[i + 4][j]) {
                         if (remove) {
+                            gemArray[i][j] = randInt(1, 6);
                             gemArray[i + 1][j] = randInt(1, 6);
                             gemArray[i + 2][j] = randInt(1, 6);
                             gemArray[i + 3][j] = randInt(1, 6);
@@ -265,6 +269,7 @@ public class GameThread implements Runnable {
                 if (i + 3 <= 7) {
                     if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j]) {
                         if (remove) {
+                            gemArray[i][j] = randInt(1, 6);
                             gemArray[i + 1][j] = randInt(1, 6);
                             gemArray[i + 2][j] = randInt(1, 6);
                             gemArray[i + 3][j] = randInt(1, 6);
@@ -284,6 +289,7 @@ public class GameThread implements Runnable {
                 if (i + 2 <= 7) {
                     if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j]) {
                         if (remove) {
+                            gemArray[i][j] = randInt(1, 6);
                             gemArray[i + 1][j] = randInt(1, 6);
                             gemArray[i + 2][j] = randInt(1, 6);
                         }
