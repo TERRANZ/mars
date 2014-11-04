@@ -16,6 +16,8 @@ public class Player {
     private Integer minDamage;
     private Integer maxDamage;
     private boolean inGame = false;
+    private Integer health;//посылать другому
+    private Integer defence;//посылать другому
 
     public Player() {
     }
@@ -106,5 +108,21 @@ public class Player {
 
     public void setInGame(boolean inGame) {
         this.inGame = inGame;
+    }
+
+    public Integer getHealth() {
+        return health;
+    }
+
+    public void setHealth(Integer health) {
+        this.health = health;
+    }
+
+    public Integer getDefence() {
+        return defence;
+    }
+
+    public void setDefence(Integer defence) {
+        this.defence = defence;
     }
 }

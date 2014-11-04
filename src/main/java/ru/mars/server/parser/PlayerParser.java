@@ -29,6 +29,8 @@ public class PlayerParser {
         player.setMinDamage(Integer.parseInt(playerElement.getElementsByTagName("mindmg").item(0).getTextContent()));
         player.setStrength(Integer.parseInt(playerElement.getElementsByTagName("str").item(0).getTextContent()));
         player.setWeapon(Integer.parseInt(playerElement.getElementsByTagName("weapon").item(0).getTextContent()));
+        player.setHealth(Integer.parseInt(playerElement.getElementsByTagName("health").item(0).getTextContent()));
+        player.setDefence(Integer.parseInt(playerElement.getElementsByTagName("def").item(0).getTextContent()));
         player.setName(playerElement.getElementsByTagName("name").item(0).getTextContent());
     }
 
@@ -50,6 +52,12 @@ public class PlayerParser {
         sb.append("<armor>");
         sb.append(player.getArmor());
         sb.append("</armor>");
+        sb.append("<health>");
+        sb.append(player.getHealth());
+        sb.append("</health>");
+        sb.append("<def>");
+        sb.append(player.getDefence());
+        sb.append("</def>");
         sb.append("</player>");
         return sb.toString();
     }

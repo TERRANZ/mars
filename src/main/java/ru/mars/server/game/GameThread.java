@@ -192,6 +192,7 @@ public class GameThread implements Runnable {
                             gemArray[i][j + 2] = randInt(1, 6);
                             gemArray[i][j + 3] = randInt(1, 6);
                             gemArray[i][j + 4] = randInt(1, 6);
+                            doAction(count, 2);
                         }
                         return true;
                     }
@@ -212,6 +213,7 @@ public class GameThread implements Runnable {
                             gemArray[i][j + 1] = randInt(1, 6);
                             gemArray[i][j + 2] = randInt(1, 6);
                             gemArray[i][j + 3] = randInt(1, 6);
+                            doAction(count, 1);
                         }
                         return true;
                     }
@@ -231,6 +233,7 @@ public class GameThread implements Runnable {
                             gemArray[i][j] = randInt(1, 6);
                             gemArray[i][j + 1] = randInt(1, 6);
                             gemArray[i][j + 2] = randInt(1, 6);
+                            doAction(count, 0);
                         }
                         return true;
                     }
@@ -253,6 +256,7 @@ public class GameThread implements Runnable {
                             gemArray[i + 2][j] = randInt(1, 6);
                             gemArray[i + 3][j] = randInt(1, 6);
                             gemArray[i + 4][j] = randInt(1, 6);
+                            doAction(count, 2);
                         }
                         return true;
                     }
@@ -273,6 +277,7 @@ public class GameThread implements Runnable {
                             gemArray[i + 1][j] = randInt(1, 6);
                             gemArray[i + 2][j] = randInt(1, 6);
                             gemArray[i + 3][j] = randInt(1, 6);
+                            doAction(count, 1);
                         }
                         return true;
                     }
@@ -292,6 +297,7 @@ public class GameThread implements Runnable {
                             gemArray[i][j] = randInt(1, 6);
                             gemArray[i + 1][j] = randInt(1, 6);
                             gemArray[i + 2][j] = randInt(1, 6);
+                            doAction(count, 0);
                         }
                         return true;
                     }
@@ -338,6 +344,61 @@ public class GameThread implements Runnable {
             linesFound = 0;
         }
 
+    }
+
+    private void doAction(int type, int bonus) {
+        if (type == 1) {
+            getAttack(bonus);
+        }
+    }
+
+    private void getAttack(int bonus) {
+        if (!isSecondPlayerInMove) {
+            int hp = player2.getHealth();
+            int def = player2.getDefence();
+            int dmg = generateHeroDamage(player1.getStrength(), player1.getAgility(), player1.getMinDamage(), player1.getMaxDamage()/*+ PlayerCore.heroAtk*/, bonus);
+            def -= dmg;
+            if (def < 0) {
+                player2.setDefence(0);
+                hp -= (-def);
+                player2.setHealth(hp);
+            } else {
+                player2.setDefence(def);
+            }
+
+        } else {
+            int hp = player1.getHealth();
+            int def = player1.getDefence();
+            int dmg = generateHeroDamage(player2.getStrength(), player2.getAgility(), player2.getMinDamage(), player2.getMaxDamage()/*+ PlayerCore.heroAtk*/, bonus);
+            def -= dmg;
+            if (def < 0) {
+                player1.setDefence(0);
+                hp -= (-def);
+                player1.setHealth(hp);
+            } else {
+                player1.setDefence(def);
+            }
+        }
+    }
+
+
+    private int generateHeroDamage(int strength, int agility, int min, int max, int bonus) {
+        int genDmg = (int) (min + Math.round(Math.random() * (max - min)));
+        if (genDmg < max) {
+            int str = ((strength + bonus * 3) / 100);
+            int luck = (int) Math.random();
+            if (luck < str) {
+                genDmg = max;
+            }
+        }
+        int luck2 = (int) Math.random();
+        int agl = (int) ((agility + bonus * 2.5) / 100);
+        if (luck2 <= agl) {
+            genDmg = (genDmg + bonus) * 2;
+        } else {
+            genDmg = genDmg + bonus;
+        }
+        return genDmg;
     }
 
     /**
