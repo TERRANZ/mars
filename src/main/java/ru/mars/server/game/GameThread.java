@@ -133,6 +133,7 @@ public class GameThread implements Runnable {
             }
             break;
         }
+        checkFields();
     }
 
     public synchronized void playerOk(Channel channel, Element root) {
@@ -179,16 +180,19 @@ public class GameThread implements Runnable {
         gemArray[count][0] = el0;
     }
 
-    private Boolean tryCheckVLine5() {
+    private Boolean tryCheckVLine5(boolean update) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int count = (gemArray[i][j]);
                 if (j + 4 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3] && count == gemArray[i][j + 4]) {
-                        gemArray[i][j + 1] = randInt(1, 6);
-                        gemArray[i][j + 2] = randInt(1, 6);
-                        gemArray[i][j + 3] = randInt(1, 6);
-                        gemArray[i][j + 4] = randInt(1, 6);
+                        if (update) {
+                            gemArray[i][j + 1] = randInt(1, 6);
+                            gemArray[i][j + 2] = randInt(1, 6);
+                            gemArray[i][j + 3] = randInt(1, 6);
+                            gemArray[i][j + 4] = randInt(1, 6);
+                        }
+                        return true;
                     }
                 }
             }
@@ -196,12 +200,17 @@ public class GameThread implements Runnable {
         return false;
     }
 
-    private Boolean tryCheckVLine4() {
+    private Boolean tryCheckVLine4(boolean remove) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int count = (gemArray[i][j]);
                 if (j + 3 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3]) {
+                        if (remove) {
+                            gemArray[i][j + 1] = randInt(1, 6);
+                            gemArray[i][j + 2] = randInt(1, 6);
+                            gemArray[i][j + 3] = randInt(1, 6);
+                        }
                         return true;
                     }
                 }
@@ -210,12 +219,16 @@ public class GameThread implements Runnable {
         return false;
     }
 
-    private Boolean tryCheckVLine3() {
+    private Boolean tryCheckVLine3(boolean remove) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int count = (gemArray[i][j]);
                 if (j + 2 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2]) {
+                        if (remove) {
+                            gemArray[i][j + 1] = randInt(1, 6);
+                            gemArray[i][j + 2] = randInt(1, 6);
+                        }
                         return true;
                     }
                 }
@@ -224,13 +237,19 @@ public class GameThread implements Runnable {
         return false;
     }
 
-    private Boolean tryCheckHLine5() {
+    private Boolean tryCheckHLine5(boolean remove) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 //trace(i, j)
                 int count = (gemArray[i][j]);
                 if (i + 4 <= 7) {
                     if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j] && count == gemArray[i + 4][j]) {
+                        if (remove) {
+                            gemArray[i + 1][j] = randInt(1, 6);
+                            gemArray[i + 2][j] = randInt(1, 6);
+                            gemArray[i + 3][j] = randInt(1, 6);
+                            gemArray[i + 4][j] = randInt(1, 6);
+                        }
                         return true;
                     }
                 }
@@ -239,12 +258,17 @@ public class GameThread implements Runnable {
         return false;
     }
 
-    private Boolean tryCheckHLine4() {
+    private Boolean tryCheckHLine4(boolean remove) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int count = (gemArray[i][j]);
                 if (i + 3 <= 7) {
                     if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j]) {
+                        if (remove) {
+                            gemArray[i + 1][j] = randInt(1, 6);
+                            gemArray[i + 2][j] = randInt(1, 6);
+                            gemArray[i + 3][j] = randInt(1, 6);
+                        }
                         return true;
                     }
                 }
@@ -253,18 +277,61 @@ public class GameThread implements Runnable {
         return false;
     }
 
-    private Boolean tryCheckHLine3() {
+    private Boolean tryCheckHLine3(boolean remove) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int count = (gemArray[i][j]);
                 if (i + 2 <= 7) {
                     if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j]) {
+                        if (remove) {
+                            gemArray[i + 1][j] = randInt(1, 6);
+                            gemArray[i + 2][j] = randInt(1, 6);
+                        }
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    private void checkFields() {
+        int linesFound = 0;
+        if (tryCheckHLine5(false)) {
+            tryCheckHLine5(true);
+            linesFound++;
+        } else {
+            if (tryCheckHLine4(false)) {
+                tryCheckHLine4(true);
+                linesFound++;
+            } else {
+                if (tryCheckHLine3(false)) {
+                    tryCheckHLine3(true);
+                    linesFound++;
+                } else {
+                    if (tryCheckVLine5(false)) {
+                        tryCheckVLine5(true);
+                        linesFound++;
+                    } else {
+                        if (tryCheckVLine4(false)) {
+                            tryCheckVLine4(true);
+                            linesFound++;
+                        } else {
+                            if (tryCheckVLine3(false)) {
+                                tryCheckVLine3(true);
+                                linesFound++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (linesFound == 0) {
+            isSecondPlayerInMove = !isSecondPlayerInMove;
+        } else {
+            linesFound = 0;
+        }
+
     }
 
     /**
