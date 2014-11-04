@@ -26,6 +26,7 @@ public class GameThread implements Runnable {
     private Map<Channel, Boolean> playerReady = new HashMap<>();
     private volatile boolean game = true;
     private Logger logger = Logger.getLogger(this.getClass());
+    private boolean isSecondPlayerInMove = false;
 
     public GameThread(Channel channel1, Channel channel2, Player player1, Player player2) {
         this.channel1 = channel1;
@@ -66,7 +67,8 @@ public class GameThread implements Runnable {
         sbMap.append("</gemArray>");
         StringBuilder sbFistMove = new StringBuilder();
         sbFistMove.append("<first>");
-        sbFistMove.append(new Date().getTime() % 2 == 0 ? 2 : 1);
+        isSecondPlayerInMove = new Date().getTime() % 2 == 0;
+        sbFistMove.append(isSecondPlayerInMove ? 2 : 1);
         sbFistMove.append("</first>");
         StringBuilder sb1 = new StringBuilder();
         sb1.append(MessageFactory.header(MessageType.S_GAME_STATE));
@@ -180,10 +182,13 @@ public class GameThread implements Runnable {
     private Boolean tryCheckVLine5() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                int count= (gemArray[i][j]);
+                int count = (gemArray[i][j]);
                 if (j + 4 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3] && count == gemArray[i][j + 4]) {
-                        return true;
+                        gemArray[i][j + 1] = randInt(1, 6);
+                        gemArray[i][j + 2] = randInt(1, 6);
+                        gemArray[i][j + 3] = randInt(1, 6);
+                        gemArray[i][j + 4] = randInt(1, 6);
                     }
                 }
             }
@@ -194,7 +199,7 @@ public class GameThread implements Runnable {
     private Boolean tryCheckVLine4() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                int count= (gemArray[i][j]);
+                int count = (gemArray[i][j]);
                 if (j + 3 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3]) {
                         return true;
@@ -208,7 +213,7 @@ public class GameThread implements Runnable {
     private Boolean tryCheckVLine3() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                int count= (gemArray[i][j]);
+                int count = (gemArray[i][j]);
                 if (j + 2 <= 7) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2]) {
                         return true;
@@ -223,9 +228,9 @@ public class GameThread implements Runnable {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 //trace(i, j)
-                int count= (gemArray[i][j]);
+                int count = (gemArray[i][j]);
                 if (i + 4 <= 7) {
-                    if (count == gemArray[i+1][j] && count == gemArray[i+2][j] && count == gemArray[i+3][j] && count == gemArray[i+4][j]) {
+                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j] && count == gemArray[i + 4][j]) {
                         return true;
                     }
                 }
@@ -237,9 +242,9 @@ public class GameThread implements Runnable {
     private Boolean tryCheckHLine4() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                int count= (gemArray[i][j]);
+                int count = (gemArray[i][j]);
                 if (i + 3 <= 7) {
-                    if (count == gemArray[i+1][j] && count == gemArray[i+2][j] && count == gemArray[i+3][j]) {
+                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j]) {
                         return true;
                     }
                 }
@@ -251,9 +256,9 @@ public class GameThread implements Runnable {
     private Boolean tryCheckHLine3() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                int count= (gemArray[i][j]);
+                int count = (gemArray[i][j]);
                 if (i + 2 <= 7) {
-                    if (count == gemArray[i+1][j] && count == gemArray[i+2][j]) {
+                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j]) {
                         return true;
                     }
                 }
