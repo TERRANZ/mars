@@ -11,11 +11,11 @@ public class MessageFactory {
 
     public static String header(int msgId) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+        sb.append("<?xml version='1.0' encoding='utf-8'?>");
         sb.append("<msg>");
         sb.append("<id>");
         sb.append(msgId);
-        sb.append("</id");
+        sb.append("</id>");
         return sb.toString();
     }
 
@@ -24,6 +24,10 @@ public class MessageFactory {
         sb.append(msg);
         sb.append("</msg>");
         return sb.toString();
+    }
+
+    public static String createPingMessage() {
+        return footer(header(MessageType.S_PING) + "<text> hello </text>");
     }
 
     public static String createWaitMessage() {
@@ -42,18 +46,14 @@ public class MessageFactory {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
-            sbMap.append("<line");
-            sbMap.append(i);
-            sbMap.append(">");
             for (int j = 0; j < 8; j++) {
                 sbMap.append(gemArray[i][j]);
                 sbMap.append(",");
             }
             sbMap.delete(sbMap.length() - 1, sbMap.length());
-            sbMap.append("</line");
-            sbMap.append(i);
-            sbMap.append(">");
+            sbMap.append(";");
         }
+        sbMap.delete(sbMap.length() - 1, sbMap.length());
         sbMap.append("</gemArray>");
         StringBuilder sbFirstMove = new StringBuilder();
 
@@ -74,18 +74,14 @@ public class MessageFactory {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
-            sbMap.append("<line");
-            sbMap.append(i);
-            sbMap.append(">");
             for (int j = 0; j < 8; j++) {
                 sbMap.append(gemArray[i][j]);
                 sbMap.append(",");
             }
             sbMap.delete(sbMap.length() - 1, sbMap.length());
-            sbMap.append("</line");
-            sbMap.append(i);
-            sbMap.append(">");
+            sbMap.append(";");
         }
+        sbMap.delete(sbMap.length() - 1, sbMap.length());
         sbMap.append("</gemArray>");
         StringBuilder sbDamage = new StringBuilder();
 

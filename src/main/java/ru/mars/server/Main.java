@@ -3,6 +3,7 @@ package ru.mars.server;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import ru.mars.server.network.GameServer;
+import ru.mars.server.network.policyserver.PolicyServer;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,7 +19,7 @@ public class Main {
     public static void main(String args[]) throws IOException, InterruptedException {
         BasicConfigurator.configure();
         initServerProperties();
-        //new PolicyServer(PORT_OF_POLICY_SERVER, new String[]{"*:" + PORT_OF_GAME_SERVER + "," + PORT_OF_CHAT_SERVER}).start();
+        new PolicyServer(PORT_OF_POLICY_SERVER, new String[]{"*:" + PORT_OF_GAME_SERVER + "," + PORT_OF_CHAT_SERVER}).start();
         new Thread(new Runnable() {
             @Override
             public void run() {

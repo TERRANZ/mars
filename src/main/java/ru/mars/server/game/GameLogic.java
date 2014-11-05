@@ -251,6 +251,12 @@ public abstract class GameLogic {
         if (type == 1) {
             isAttack = true;
             attackDamage = getAttack(bonus);
+        } else if (type == 2) {
+            getAtk(bonus);
+        } else if (type == 3) {
+            getDef(bonus);
+        } else if (type == 4) {
+            getHeal(bonus);
         }
     }
 
@@ -303,6 +309,60 @@ public abstract class GameLogic {
         }
         return genDmg;
     }
+
+    private void getAtk(int bonus) {
+        if (!isSecondPlayerInMove)
+            player1.setAttack(player1.getAttack() + 1 + bonus);
+        else
+            player2.setAttack(player2.getAttack() + 1 + bonus);
+    }
+
+    private void getDef(int bonus) {
+        if (!isSecondPlayerInMove) {
+            int def = player1.getDefence();
+            int defPower = 1 + bonus;
+            if (def + defPower <= player1.getMaxDefence()) {
+                def += defPower;
+            } else {
+                def = player1.getMaxDefence();
+            }
+            player1.setDefence(def);
+        } else {
+            int def = player2.getDefence();
+            int defPower = 1 + bonus;
+            if (def + defPower <= player2.getMaxDefence()) {
+                def += defPower;
+            } else {
+                def = player2.getMaxDefence();
+            }
+            player2.setDefence(def);
+        }
+    }
+
+    private void getHeal(int bonus) {
+        if (!isSecondPlayerInMove) {
+            int hp = player1.getHealth();
+            int healPower = 1 + bonus;
+
+            if (hp + healPower <= player1.getMaxHealth()) {
+                hp += healPower;
+            } else {
+                hp = player1.getMaxHealth();
+            }
+            player1.setHealth(hp);
+        } else {
+            int hp = player2.getHealth();
+            int healPower = 1 + bonus;
+
+            if (hp + healPower <= player2.getMaxHealth()) {
+                hp += healPower;
+            } else {
+                hp = player2.getMaxHealth();
+            }
+            player2.setHealth(hp);
+        }
+    }
+
 
     /**
      * Returns a pseudo-random number between min and max, inclusive.

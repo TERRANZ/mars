@@ -4,12 +4,14 @@ import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 import ru.mars.server.network.message.MessageFactory;
 import ru.mars.server.network.message.MessageType;
 import ru.mars.server.parser.PlayerParser;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -55,7 +57,9 @@ public class GameWorker {
         Document doc = null;
         try {
             dBuilder = dbFactory.newDocumentBuilder();
-            doc = dBuilder.parse(xml);
+            InputSource is = new InputSource();
+            is.setCharacterStream(new StringReader(xml));
+            doc = dBuilder.parse(is);
             doc.getDocumentElement().normalize();
         } catch (Exception e) {
             logger.error("Unable to parse xml", e);
@@ -63,8 +67,14 @@ public class GameWorker {
 
         if (doc != null) {
             Element root = doc.getDocumentElement();
-            Integer command = 0;//TODO:
+            Integer command = Integer.parseInt(root.getElementsByTagName("id").item(0).getTextContent());
             switch (command) {
+                case MessageType.C_PING: {
+                    logger.info("PING");
+                    channel.write(MessageFactory.createPingMessage());
+                }
+                break;
+
                 case MessageType.C_PLAYER_INFO: {
                     if (!gameStateMap.get(channel).equals(GameState.LOGIN))
                         return;//TODO: exception?

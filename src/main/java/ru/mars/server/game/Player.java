@@ -18,6 +18,9 @@ public class Player {
     private boolean inGame = false;
     private Integer health = 0;//посылать другому
     private Integer defence = 0;//посылать другому
+    private Integer attack = 0;
+    private Integer maxDefence = 0;
+    private Integer maxHealth = 0;
 
     public Player() {
     }
@@ -52,6 +55,7 @@ public class Player {
 
     public void setConstitution(Integer constitution) {
         this.constitution = constitution;
+        this.health = constitution * 10;
     }
 
     public Integer getAgility() {
@@ -124,5 +128,29 @@ public class Player {
 
     public void setDefence(Integer defence) {
         this.defence = defence;
+    }
+
+    public Integer getAttack() {
+        return attack;
+    }
+
+    public void setAttack(Integer attack) {
+        this.attack = attack;
+    }
+
+    public Integer getMaxDefence() {
+        return maxDefence;
+    }
+
+    public void setMaxDefence(Integer maxDefence) {
+        this.maxDefence = maxDefence;
+    }
+
+    public Integer getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(Integer maxHealth) {
+        this.maxHealth = maxHealth;
     }
 }

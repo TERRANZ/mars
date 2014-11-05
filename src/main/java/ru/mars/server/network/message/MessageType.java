@@ -5,6 +5,8 @@ package ru.mars.server.network.message;
  * Time: 17:40
  */
 public class MessageType {
+    public static final int C_PING = 0;//test
+    public static final int S_PING = 1;//test
     public static final int C_PLAYER_INFO = 2;//статы игрокоа
     public static final int S_WAIT = 3;//сервер сообщает, что клиенту ищется пара
     public static final int C_PLAYER_CANCEL_WAIT = 4;//клиент расхотел играть

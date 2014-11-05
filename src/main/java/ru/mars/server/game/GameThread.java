@@ -33,7 +33,11 @@ public class GameThread extends GameLogic implements Runnable {
         sendGameStateToPlayers(true, MessageType.S_GAME_STATE);
         //ждём в цикле действий
         while (game) {
-
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while sleep", e);
+            }
         }
     }
 
@@ -71,6 +75,10 @@ public class GameThread extends GameLogic implements Runnable {
         if (isAttack) {
             //прошла атака, надо сообщить отдельно
             sendAttackMessage();
+            if (player1.getHealth() <= 0 || player2.getHealth() <= 0) {
+                game = false;
+                sendGameOverMessage();
+            }
         } else {
             sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
         }
@@ -86,10 +94,13 @@ public class GameThread extends GameLogic implements Runnable {
     }
 
 
-    protected void sendAttackMessage() {
+    private void sendAttackMessage() {
         channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage));
         channel1.write(MessageFactory.createDamageMessage(gemArray, attackDamage));
     }
 
-
+    private void sendGameOverMessage() {
+        channel1.write(MessageFactory.createGameOverMessage());
+        channel2.write(MessageFactory.createGameOverMessage());
+    }
 }
