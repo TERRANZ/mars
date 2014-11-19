@@ -153,4 +153,26 @@ public class Player {
     public void setMaxHealth(Integer maxHealth) {
         this.maxHealth = maxHealth;
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", level=" + level +
+                ", strength=" + strength +
+                ", constitution=" + constitution +
+                ", agility=" + agility +
+                ", lucky=" + lucky +
+                ", weapon=" + weapon +
+                ", armor=" + armor +
+                ", minDamage=" + minDamage +
+                ", maxDamage=" + maxDamage +
+                ", inGame=" + inGame +
+                ", health=" + health +
+                ", defence=" + defence +
+                ", attack=" + attack +
+                ", maxDefence=" + maxDefence +
+                ", maxHealth=" + maxHealth +
+                '}';
+    }
 }

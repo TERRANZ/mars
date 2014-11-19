@@ -41,7 +41,7 @@ public class PlayerParser {
         sb.append("<name>");
         sb.append(player.getName());
         sb.append("</name>");
-        sb.append("<leve>");
+        sb.append("<level>");
         sb.append(player.getLevel());
         sb.append("</level>");
         sb.append("<weapon>");
@@ -50,9 +50,9 @@ public class PlayerParser {
         sb.append("<armor>");
         sb.append(player.getArmor());
         sb.append("</armor>");
-        sb.append("<health>");
+        sb.append("<hp>");
         sb.append(player.getHealth());
-        sb.append("</health>");
+        sb.append("</hp>");
         sb.append("<def>");
         sb.append(player.getDefence());
         sb.append("</def>");

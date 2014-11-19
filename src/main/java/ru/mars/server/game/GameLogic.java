@@ -21,11 +21,14 @@ public abstract class GameLogic {
     protected boolean isSecondPlayerInMove = false;
     protected boolean isAttack = false;
     protected int attackDamage = 0;
+    protected boolean mapGenerate = true;
 
     protected void initMap() {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
                 gemArray[i][j] = randInt(1, 6);
+        checkFields();
+        mapGenerate = false;
     }
 
     public int[][] getMap() {
@@ -212,52 +215,60 @@ public abstract class GameLogic {
     }
 
     protected void checkFields() {
-        int linesFound = 0;
-        if (tryCheckHLine5(false)) {
-            tryCheckHLine5(true);
-            linesFound++;
-        } else {
-            if (tryCheckHLine4(false)) {
-                tryCheckHLine4(true);
+        int linesFound = 1;
+        logger.info("Checking fields");
+        while (linesFound > 0) {
+            linesFound = 0;
+            if (tryCheckHLine5(false)) {
+                tryCheckHLine5(true);
                 linesFound++;
+                logger.info("Checking fields: hline5");
             } else {
-                if (tryCheckHLine3(false)) {
-                    tryCheckHLine3(true);
+                if (tryCheckHLine4(false)) {
+                    tryCheckHLine4(true);
                     linesFound++;
+                    logger.info("Checking fields: hline4");
                 } else {
-                    if (tryCheckVLine5(false)) {
-                        tryCheckVLine5(true);
+                    if (tryCheckHLine3(false)) {
+                        tryCheckHLine3(true);
                         linesFound++;
+                        logger.info("Checking fields: hline3");
                     } else {
-                        if (tryCheckVLine4(false)) {
-                            tryCheckVLine4(true);
+                        if (tryCheckVLine5(false)) {
+                            tryCheckVLine5(true);
                             linesFound++;
+                            logger.info("Checking fields: vline5");
                         } else {
-                            if (tryCheckVLine3(false)) {
-                                tryCheckVLine3(true);
+                            if (tryCheckVLine4(false)) {
+                                tryCheckVLine4(true);
                                 linesFound++;
+                                logger.info("Checking fields: vline4");
+                            } else {
+                                if (tryCheckVLine3(false)) {
+                                    tryCheckVLine3(true);
+                                    linesFound++;
+                                    logger.info("Checking fields: vline3");
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        if (linesFound != 0) {
-            linesFound = 0;
-        }
     }
 
     protected void doAction(int type, int bonus) {
-        if (type == 1) {
-            isAttack = true;
-            attackDamage = getAttack(bonus);
-        } else if (type == 2) {
-            getAtk(bonus);
-        } else if (type == 3) {
-            getDef(bonus);
-        } else if (type == 4) {
-            getHeal(bonus);
-        }
+        if (!mapGenerate)
+            if (type == 1) {
+                isAttack = true;
+                attackDamage = getAttack(bonus);
+            } else if (type == 2) {
+                getAtk(bonus);
+            } else if (type == 3) {
+                getDef(bonus);
+            } else if (type == 4) {
+                getHeal(bonus);
+            }
     }
 
     protected int getAttack(int bonus) {

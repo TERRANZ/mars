@@ -46,8 +46,11 @@ public class GameWorker {
     }
 
     public synchronized void removePlayer(Channel channel) {
-        gameStateMap.remove(channel);
-        playerMap.remove(channel);
+        if (playerMap.containsKey(channel)) {
+            gameThreadMap.get(channel).playerDisconnect(channel);
+            gameStateMap.remove(channel);
+            playerMap.remove(channel);
+        }
     }
 
     public synchronized void handlePlayerCommand(Channel channel, String xml) {
@@ -83,13 +86,16 @@ public class GameWorker {
                     channel.write(MessageFactory.createWaitMessage());
                     PairFinder pairFinder = new PairFinder(channel, playerMap.get(channel));
                     finders.put(service.submit(pairFinder), channel);
+                    logger.info("Received player info: " + playerMap.get(channel).toString());
                 }
                 break;
                 case MessageType.C_PLAYER_CANCEL_WAIT: {
                     if (!gameStateMap.get(channel).equals(GameState.LOGGED_IN))
                         return;//TODO: exception?
-                    gameStateMap.remove(channel);
-                    channel.write(MessageFactory.createGameOverMessage());
+                    logger.info("Player cancelled waiting");
+                    gameStateMap.put(channel, GameState.LOGIN);
+//                    gameStateMap.remove(channel);
+//                    channel.write(MessageFactory.createGameOverMessage());
                     for (Future pairFinder : finders.keySet())
                         if (finders.get(pairFinder).equals(channel))
                             pairFinder.cancel(true);//стопаем поиск пары если игрок отказался
@@ -135,6 +141,12 @@ public class GameWorker {
     public void setPlayerState(Channel channel, GameState gameState) {
         synchronized (gameStateMap) {
             gameStateMap.put(channel, gameState);
+        }
+    }
+
+    public GameState getPlayerState(Channel channel) {
+        synchronized (gameStateMap) {
+            return gameStateMap.get(channel);
         }
     }
 }

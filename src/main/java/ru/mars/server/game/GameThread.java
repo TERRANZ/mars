@@ -41,6 +41,17 @@ public class GameThread extends GameLogic implements Runnable {
         }
     }
 
+    public synchronized void playerDisconnect(Channel channel) {
+        if (channel.equals(channel1)) {
+            channel2.write(MessageFactory.createGameOverMessage());
+            GameWorker.getInstance().setPlayerState(channel2, GameState.LOGIN);
+        } else {
+            channel1.write(MessageFactory.createGameOverMessage());
+            GameWorker.getInstance().setPlayerState(channel1, GameState.LOGIN);
+        }
+        game = false;
+    }
+
     public synchronized void playerMove(Channel channel, Element rootElement) {
         NodeList moveNodeList = rootElement.getElementsByTagName("move");
         Node moveNode = moveNodeList.item(0);

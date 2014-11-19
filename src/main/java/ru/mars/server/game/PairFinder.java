@@ -23,7 +23,7 @@ public class PairFinder implements Runnable {
         int maxDiff = 1;
         while (true) {
             for (Channel channel : GameWorker.getInstance().getPlayerMap().keySet()) {
-                if (!channel.equals(playerChannel)) {
+                if (!channel.equals(playerChannel) && GameWorker.getInstance().getPlayerState(channel).equals(GameState.LOGGED_IN)) {
                     Player p = GameWorker.getInstance().getPlayerMap().get(channel);
                     if (!p.isInGame()) {
                         int diff = Math.abs(p.getLevel() - player.getLevel());
@@ -31,6 +31,7 @@ public class PairFinder implements Runnable {
                             //пара найдена, разница в уровенях около 1
 //                            new Thread(new GameThread(playerChannel, channel, player, p)).start();
                             playerChannel.write(MessageFactory.createPairFoundMessage());
+                            channel.write(MessageFactory.createPairFoundMessage());
                             GameThread gameThread = new GameThread(playerChannel, channel, player, p);
                             //добавляем для каналов игру
                             GameWorker.getInstance().addGameThreadForChannel(playerChannel, gameThread);
