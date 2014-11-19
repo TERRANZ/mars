@@ -38,8 +38,8 @@ public class MessageFactory {
         return footer(header(MessageType.S_GAME_OVER));
     }
 
-    public static String createPairFoundMessage() {
-        return footer(header(MessageType.S_PAIR_FOUND));
+    public static String createPairFoundMessage(int playerNum) {
+        return footer(header(MessageType.S_PAIR_FOUND) + "<playerid>" + playerNum + "</playerid>");
     }
 
     public static String createGameStateMessage(int[][] gemArray, int type, boolean isSecondPlayerInMove, Player player) {
@@ -95,5 +95,9 @@ public class MessageFactory {
         sb1.append(sbDamage);
         sb1.append(MessageFactory.footer(""));
         return sb1.toString();
+    }
+
+    public static String createMoveMessage(String dir, Integer line) {
+        return footer(header(MessageType.S_PLAYER_MOVE) + "<move><dir>" + dir + "</dir><line>" + line + "</line></move>");
     }
 }

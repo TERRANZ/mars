@@ -1,6 +1,5 @@
 package ru.mars.server;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import ru.mars.server.network.GameServer;
 import ru.mars.server.network.policyserver.PolicyServer;
@@ -17,7 +16,7 @@ public class Main {
     private static Logger logger = Logger.getLogger(Main.class);
 
     public static void main(String args[]) throws IOException, InterruptedException {
-        BasicConfigurator.configure();
+        //BasicConfigurator.configure();
         initServerProperties();
         new PolicyServer(PORT_OF_POLICY_SERVER, new String[]{"*:" + PORT_OF_GAME_SERVER + "," + PORT_OF_CHAT_SERVER}).start();
         new Thread(new Runnable() {

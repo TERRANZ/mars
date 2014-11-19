@@ -25,34 +25,50 @@ public class GameServerHandler extends SimpleChannelUpstreamHandler {
 //    }
 
     @Override
-    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) {
         if (e instanceof ChannelStateEvent)
             logger.info("Handle upstream : " + e.toString());
-        super.handleUpstream(ctx, e);
+        try {
+            super.handleUpstream(ctx, e);
+        } catch (Exception e1) {
+            logger.error("Unable to handle upstream", e1);
+        }
     }
 
     @Override
-    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 //        e.getFuture().addListener(new Greeter());
         GameWorker.getInstance().addPlayer(e.getChannel());
     }
 
     @Override
-    public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         if (e instanceof ChannelStateEvent)
             logger.info("channel disconnected : " + e.toString());
-        GameWorker.getInstance().removePlayer(e.getChannel());
+        try {
+            GameWorker.getInstance().removePlayer(e.getChannel());
+        } catch (Exception e1) {
+            logger.error("Unable to handle disconnect", e1);
+        }
     }
 
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        GameWorker.getInstance().handlePlayerCommand(e.getChannel(), e.getMessage().toString());
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
+        try {
+            GameWorker.getInstance().handlePlayerCommand(e.getChannel(), e.getMessage().toString());
+        } catch (Exception e1) {
+            logger.error("Unable to handle received message", e1);
+        }
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
         logger.warn("Unexcepted exception from downstream.", e.getCause());
-        GameWorker.getInstance().removePlayer(e.getChannel());
-        e.getChannel().close();
+        try {
+            GameWorker.getInstance().removePlayer(e.getChannel());
+            e.getChannel().close();
+        } catch (Exception e1) {
+            logger.error("Unable to handle exception", e1);
+        }
     }
 }

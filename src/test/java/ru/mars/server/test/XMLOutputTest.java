@@ -18,7 +18,7 @@ public class XMLOutputTest extends TestCase {
         BasicConfigurator.configure();
         Logger logger = Logger.getLogger(this.getClass());
         logger.info("Pair found message");
-        logger.info(MessageFactory.createPairFoundMessage());
+        logger.info(MessageFactory.createPairFoundMessage(1));
         logger.info("GameOver message");
         logger.info(MessageFactory.createGameOverMessage());
 

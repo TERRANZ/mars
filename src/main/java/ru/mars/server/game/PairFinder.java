@@ -12,6 +12,7 @@ public class PairFinder implements Runnable {
 
     private Channel playerChannel;
     private Player player;
+    protected Logger logger = Logger.getLogger(this.getClass());
 
     public PairFinder(Channel playerChannel, Player player) {
         this.playerChannel = playerChannel;
@@ -30,14 +31,19 @@ public class PairFinder implements Runnable {
                         if (diff <= maxDiff) {
                             //пара найдена, разница в уровенях около 1
 //                            new Thread(new GameThread(playerChannel, channel, player, p)).start();
-                            playerChannel.write(MessageFactory.createPairFoundMessage());
-                            channel.write(MessageFactory.createPairFoundMessage());
-                            GameThread gameThread = new GameThread(playerChannel, channel, player, p);
-                            //добавляем для каналов игру
-                            GameWorker.getInstance().addGameThreadForChannel(playerChannel, gameThread);
-                            GameWorker.getInstance().addGameThreadForChannel(channel, gameThread);
-                            GameWorker.getInstance().setPlayerState(playerChannel, GameState.GAME_LOADING);
-                            GameWorker.getInstance().setPlayerState(channel, GameState.GAME_LOADING);
+                            try {
+                                playerChannel.write(MessageFactory.createPairFoundMessage(1));
+                                channel.write(MessageFactory.createPairFoundMessage(2));
+                                GameThread gameThread = new GameThread(playerChannel, channel, player, p);
+                                //добавляем для каналов игру
+                                GameWorker.getInstance().addGameThreadForChannel(playerChannel, gameThread);
+                                GameWorker.getInstance().addGameThreadForChannel(channel, gameThread);
+                                GameWorker.getInstance().setPlayerState(playerChannel, GameState.GAME_LOADING);
+                                GameWorker.getInstance().setPlayerState(channel, GameState.GAME_LOADING);
+                            } catch (Exception e) {
+                                logger.error("Unable to send pair message", e);
+                            }
+
                             return;
                         }
                     }

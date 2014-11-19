@@ -43,11 +43,20 @@ public class GameThread extends GameLogic implements Runnable {
 
     public synchronized void playerDisconnect(Channel channel) {
         if (channel.equals(channel1)) {
-            channel2.write(MessageFactory.createGameOverMessage());
-            GameWorker.getInstance().setPlayerState(channel2, GameState.LOGIN);
+            try {
+                channel2.write(MessageFactory.createGameOverMessage());
+                GameWorker.getInstance().setPlayerState(channel2, GameState.LOGIN);
+            } catch (Exception e) {
+                logger.error("Unable to send player disconnection message to channel2", e);
+            }
+
         } else {
-            channel1.write(MessageFactory.createGameOverMessage());
-            GameWorker.getInstance().setPlayerState(channel1, GameState.LOGIN);
+            try {
+                channel1.write(MessageFactory.createGameOverMessage());
+                GameWorker.getInstance().setPlayerState(channel1, GameState.LOGIN);
+            } catch (Exception e) {
+                logger.error("Unable to send player disconnection message to channel1", e);
+            }
         }
         game = false;
     }
@@ -57,43 +66,55 @@ public class GameThread extends GameLogic implements Runnable {
         Node moveNode = moveNodeList.item(0);
         if (moveNode == null)
             logger.error("Provided xml is invalid: no move node");
-        Element moveElement = (Element) moveNode;
-        String moveDir = moveElement.getElementsByTagName("dir").item(0).getTextContent();
-        Integer moveLine = Integer.parseInt(moveElement.getElementsByTagName("line").item(0).getTextContent());
-        boolean firstPlayer = channel.equals(channel1);
-        String player = firstPlayer ? "player1" : "player2";
-        logger.info("Player " + player + " doing move : " + moveDir + " line = " + moveLine);
-        switch (moveDir) {
-            case "l": {
-                moveLineLeft(moveLine);
+        else {
+            Element moveElement = (Element) moveNode;
+            String moveDir = moveElement.getElementsByTagName("dir").item(0).getTextContent();
+            Integer moveLine = Integer.parseInt(moveElement.getElementsByTagName("line").item(0).getTextContent());
+            boolean firstPlayer = channel.equals(channel1);
+            String player = firstPlayer ? "player1" : "player2";
+            logger.info("Player " + player + " doing move : " + moveDir + " line = " + moveLine);
+
+            if (firstPlayer)
+                channel2.write(MessageFactory.createMoveMessage(moveDir, moveLine));
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                logger.error("Sleep interruption", e);
             }
-            break;
-            case "r": {
-                moveLineRight(moveLine);
+
+            switch (moveDir) {
+                case "l": {
+                    moveLineLeft(moveLine);
+                }
+                break;
+                case "r": {
+                    moveLineRight(moveLine);
+                }
+                break;
+                case "u": {
+                    moveLineUp(moveLine);
+                }
+                break;
+                case "d": {
+                    moveLineDown(moveLine);
+                }
+                break;
             }
-            break;
-            case "u": {
-                moveLineUp(moveLine);
+            isAttack = false;
+            checkFields();
+            if (isAttack) {
+                //прошла атака, надо сообщить отдельно
+                sendAttackMessage();
+                if (player1.getHealth() <= 0 || player2.getHealth() <= 0) {
+                    game = false;
+                    sendGameOverMessage();
+                }
+            } else {
+                sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
             }
-            break;
-            case "d": {
-                moveLineDown(moveLine);
-            }
-            break;
+            isSecondPlayerInMove = !isSecondPlayerInMove;
         }
-        isAttack = false;
-        checkFields();
-        if (isAttack) {
-            //прошла атака, надо сообщить отдельно
-            sendAttackMessage();
-            if (player1.getHealth() <= 0 || player2.getHealth() <= 0) {
-                game = false;
-                sendGameOverMessage();
-            }
-        } else {
-            sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
-        }
-        isSecondPlayerInMove = !isSecondPlayerInMove;
     }
 
 
