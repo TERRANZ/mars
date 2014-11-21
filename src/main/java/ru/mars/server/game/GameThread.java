@@ -76,6 +76,8 @@ public class GameThread extends GameLogic implements Runnable {
 
             if (firstPlayer)
                 channel2.write(MessageFactory.createMoveMessage(moveDir, moveLine));
+            else
+                channel1.write(MessageFactory.createMoveMessage(moveDir, moveLine));
 
             try {
                 Thread.sleep(500);
@@ -102,7 +104,9 @@ public class GameThread extends GameLogic implements Runnable {
                 break;
             }
             isAttack = false;
-            checkFields();
+            boolean check = checkFields();
+            if (check)
+                isSecondPlayerInMove = !isSecondPlayerInMove;
             if (isAttack) {
                 //прошла атака, надо сообщить отдельно
                 sendAttackMessage();
@@ -113,7 +117,7 @@ public class GameThread extends GameLogic implements Runnable {
             } else {
                 sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
             }
-            isSecondPlayerInMove = !isSecondPlayerInMove;
+
         }
     }
 
@@ -121,14 +125,14 @@ public class GameThread extends GameLogic implements Runnable {
     private void sendGameStateToPlayers(boolean selectMoving, int type) {
         if (selectMoving)
             isSecondPlayerInMove = new Date().getTime() % 2 == 0;
-        channel2.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player1));//второму игроку статы первого и карту
-        channel1.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player2));//первому игроку статы второго и карту
+        channel2.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player1, selectMoving));//второму игроку статы первого и карту
+        channel1.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player2, selectMoving));//первому игроку статы второго и карту
     }
 
 
     private void sendAttackMessage() {
-        channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage));
-        channel1.write(MessageFactory.createDamageMessage(gemArray, attackDamage));
+        channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player1));
+        channel1.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player2));
     }
 
     private void sendGameOverMessage() {

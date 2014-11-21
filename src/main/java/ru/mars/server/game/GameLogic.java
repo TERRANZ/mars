@@ -214,40 +214,47 @@ public abstract class GameLogic {
         return false;
     }
 
-    protected void checkFields() {
+    protected boolean checkFields() {
         int linesFound = 1;
         logger.info("Checking fields");
+        boolean ret = false;
         while (linesFound > 0) {
             linesFound = 0;
             if (tryCheckHLine5(false)) {
                 tryCheckHLine5(true);
                 linesFound++;
                 logger.info("Checking fields: hline5");
+                ret = true;
             } else {
                 if (tryCheckHLine4(false)) {
                     tryCheckHLine4(true);
                     linesFound++;
                     logger.info("Checking fields: hline4");
+                    ret = true;
                 } else {
                     if (tryCheckHLine3(false)) {
                         tryCheckHLine3(true);
                         linesFound++;
                         logger.info("Checking fields: hline3");
+                        ret = true;
                     } else {
                         if (tryCheckVLine5(false)) {
                             tryCheckVLine5(true);
                             linesFound++;
                             logger.info("Checking fields: vline5");
+                            ret = true;
                         } else {
                             if (tryCheckVLine4(false)) {
                                 tryCheckVLine4(true);
                                 linesFound++;
                                 logger.info("Checking fields: vline4");
+                                ret = true;
                             } else {
                                 if (tryCheckVLine3(false)) {
                                     tryCheckVLine3(true);
                                     linesFound++;
                                     logger.info("Checking fields: vline3");
+                                    ret = true;
                                 }
                             }
                         }
@@ -255,6 +262,7 @@ public abstract class GameLogic {
                 }
             }
         }
+        return true;
     }
 
     protected void doAction(int type, int bonus) {

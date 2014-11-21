@@ -56,6 +56,25 @@ public class PlayerParser {
         sb.append("<def>");
         sb.append(player.getDefence());
         sb.append("</def>");
+        sb.append("<maxdmg>");
+        sb.append(player.getMaxDamage());
+        sb.append("</maxdmg>");
+        sb.append("</player>");
+        return sb.toString();
+    }
+
+    public static final String encodeBattlePlayer(Player player) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<player>");
+        sb.append("<hp>");
+        sb.append(player.getHealth());
+        sb.append("</hp>");
+        sb.append("<def>");
+        sb.append(player.getDefence());
+        sb.append("</def>");
+        sb.append("<maxdmg>");
+        sb.append(player.getMaxDamage());
+        sb.append("</maxdmg>");
         sb.append("</player>");
         return sb.toString();
     }

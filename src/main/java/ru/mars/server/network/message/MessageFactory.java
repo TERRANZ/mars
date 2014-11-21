@@ -42,7 +42,7 @@ public class MessageFactory {
         return footer(header(MessageType.S_PAIR_FOUND) + "<playerid>" + playerNum + "</playerid>");
     }
 
-    public static String createGameStateMessage(int[][] gemArray, int type, boolean isSecondPlayerInMove, Player player) {
+    public static String createGameStateMessage(int[][] gemArray, int type, boolean isSecondPlayerInMove, Player player, boolean selectMoving) {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
@@ -64,13 +64,16 @@ public class MessageFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(MessageFactory.header(type));
         sb.append(sbMap);
-        sb.append(PlayerParser.encode(player));
+        if (selectMoving)
+            sb.append(PlayerParser.encode(player));
+        else
+            sb.append(PlayerParser.encodeBattlePlayer(player));
         sb.append(sbFirstMove);
         sb.append(MessageFactory.footer(""));
         return sb.toString();
     }
 
-    public static String createDamageMessage(int[][] gemArray, int attackDamage) {
+    public static String createDamageMessage(int[][] gemArray, int attackDamage, boolean isSecondPlayerInMove, Player player) {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
@@ -83,6 +86,12 @@ public class MessageFactory {
         }
         sbMap.delete(sbMap.length() - 1, sbMap.length());
         sbMap.append("</gemArray>");
+
+        StringBuilder sbFirstMove = new StringBuilder();
+        sbFirstMove.append("<moveplayer>");
+        sbFirstMove.append(isSecondPlayerInMove ? 2 : 1);
+        sbFirstMove.append("</moveplayer>");
+
         StringBuilder sbDamage = new StringBuilder();
 
         sbDamage.append("<damage>");
@@ -93,6 +102,8 @@ public class MessageFactory {
         sb1.append(MessageFactory.header(MessageType.S_LINE_DAMAGE));
         sb1.append(sbMap);
         sb1.append(sbDamage);
+        sb1.append(sbFirstMove);
+        sb1.append(PlayerParser.encodeBattlePlayer(player));
         sb1.append(MessageFactory.footer(""));
         return sb1.toString();
     }
