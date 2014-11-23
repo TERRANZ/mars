@@ -44,7 +44,7 @@ public class GameThread extends GameLogic implements Runnable {
     public synchronized void playerDisconnect(Channel channel) {
         if (channel.equals(channel1)) {
             try {
-                channel2.write(MessageFactory.createGameOverMessage());
+                channel2.write(MessageFactory.createGameOverMessage(2));
                 GameWorker.getInstance().setPlayerState(channel2, GameState.LOGIN);
             } catch (Exception e) {
                 logger.error("Unable to send player disconnection message to channel2", e);
@@ -52,7 +52,7 @@ public class GameThread extends GameLogic implements Runnable {
 
         } else {
             try {
-                channel1.write(MessageFactory.createGameOverMessage());
+                channel1.write(MessageFactory.createGameOverMessage(1));
                 GameWorker.getInstance().setPlayerState(channel1, GameState.LOGIN);
             } catch (Exception e) {
                 logger.error("Unable to send player disconnection message to channel1", e);
@@ -110,10 +110,18 @@ public class GameThread extends GameLogic implements Runnable {
             if (isAttack) {
                 //прошла атака, надо сообщить отдельно
                 sendAttackMessage();
-                if (player1.getHealth() <= 0 || player2.getHealth() <= 0) {
+//                if (player1.getHealth() <= 0 || player2.getHealth() <= 0) {
+//                    game = false;
+//                    sendGameOverMessage();
+//                }
+                if (player1.getHealth() <= 0) {
                     game = false;
-                    sendGameOverMessage();
+                    sendGameOverMessage(1);
+                } else if (player2.getHealth() <= 0) {
+                    game = false;
+                    sendGameOverMessage(2);
                 }
+
             } else {
                 sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
             }
@@ -125,18 +133,18 @@ public class GameThread extends GameLogic implements Runnable {
     private void sendGameStateToPlayers(boolean selectMoving, int type) {
         if (selectMoving)
             isSecondPlayerInMove = new Date().getTime() % 2 == 0;
-        channel2.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player1, selectMoving));//второму игроку статы первого и карту
-        channel1.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player2, selectMoving));//первому игроку статы второго и карту
+        channel2.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player1, player2, selectMoving));//второму игроку статы первого и карту
+        channel1.write(MessageFactory.createGameStateMessage(gemArray, type, isSecondPlayerInMove, player2, player1, selectMoving));//первому игроку статы второго и карту
     }
 
 
     private void sendAttackMessage() {
-        channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player1));
         channel1.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player2));
+        channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player1));
     }
 
-    private void sendGameOverMessage() {
-        channel1.write(MessageFactory.createGameOverMessage());
-        channel2.write(MessageFactory.createGameOverMessage());
+    private void sendGameOverMessage(Integer deadPlayer) {
+        channel1.write(MessageFactory.createGameOverMessage(deadPlayer));
+        channel2.write(MessageFactory.createGameOverMessage(deadPlayer));
     }
 }

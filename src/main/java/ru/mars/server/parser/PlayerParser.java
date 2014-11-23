@@ -35,9 +35,9 @@ public class PlayerParser {
         player.setName(playerElement.getElementsByTagName("name").item(0).getTextContent());
     }
 
-    public static String encode(Player player) {
+    public static String encode(String header, Player player) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<player>");
+        sb.append("<" + header + ">");
         sb.append("<name>");
         sb.append(player.getName());
         sb.append("</name>");
@@ -59,13 +59,13 @@ public class PlayerParser {
         sb.append("<maxdmg>");
         sb.append(player.getMaxDamage());
         sb.append("</maxdmg>");
-        sb.append("</player>");
+        sb.append("</" + header + ">");
         return sb.toString();
     }
 
-    public static final String encodeBattlePlayer(Player player) {
+    public static final String encodeBattlePlayer(String header, Player player) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<player>");
+        sb.append("<" + header + ">");
         sb.append("<hp>");
         sb.append(player.getHealth());
         sb.append("</hp>");
@@ -75,7 +75,7 @@ public class PlayerParser {
         sb.append("<maxdmg>");
         sb.append(player.getMaxDamage());
         sb.append("</maxdmg>");
-        sb.append("</player>");
+        sb.append("</" + header + ">");
         return sb.toString();
     }
 }

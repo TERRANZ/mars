@@ -74,7 +74,7 @@ public class GameWorker {
             switch (command) {
                 case MessageType.C_PING: {
                     logger.info("PING");
-                    channel.write(MessageFactory.createPingMessage());
+                    channel.write(MessageFactory.createPingMessage(getStatistic()));
                 }
                 break;
 
@@ -148,5 +148,9 @@ public class GameWorker {
         synchronized (gameStateMap) {
             return gameStateMap.get(channel);
         }
+    }
+
+    public synchronized Statistic getStatistic() {
+        return new Statistic(getPlayerMap().size(), gameThreadMap.size() > 0 ? gameThreadMap.size() / 2 : 0);
     }
 }

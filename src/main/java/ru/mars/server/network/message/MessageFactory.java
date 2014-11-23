@@ -1,6 +1,7 @@
 package ru.mars.server.network.message;
 
 import ru.mars.server.game.Player;
+import ru.mars.server.game.Statistic;
 import ru.mars.server.parser.PlayerParser;
 
 /**
@@ -26,23 +27,23 @@ public class MessageFactory {
         return sb.toString();
     }
 
-    public static String createPingMessage() {
-        return footer(header(MessageType.S_PING) + "<text> hello </text>");
+    public static String createPingMessage(Statistic statistic) {
+        return footer(header(MessageType.S_PING) + "<text> hello </text> <online>" + statistic.getOnline() + "</online><games>" + statistic.getGames() + "</games>");
     }
 
     public static String createWaitMessage() {
         return footer(header(MessageType.S_WAIT));
     }
 
-    public static String createGameOverMessage() {
-        return footer(header(MessageType.S_GAME_OVER));
+    public static String createGameOverMessage(Integer deadPlayer) {
+        return footer(header(MessageType.S_GAME_OVER) + "<deadplayer>" + deadPlayer + "</deadplayer>");
     }
 
     public static String createPairFoundMessage(int playerNum) {
         return footer(header(MessageType.S_PAIR_FOUND) + "<playerid>" + playerNum + "</playerid>");
     }
 
-    public static String createGameStateMessage(int[][] gemArray, int type, boolean isSecondPlayerInMove, Player player, boolean selectMoving) {
+    public static String createGameStateMessage(int[][] gemArray, int type, boolean isSecondPlayerInMove, Player enemy, Player my, boolean selectMoving) {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
@@ -64,10 +65,17 @@ public class MessageFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(MessageFactory.header(type));
         sb.append(sbMap);
+
         if (selectMoving)
-            sb.append(PlayerParser.encode(player));
+            sb.append(PlayerParser.encode("enemy", enemy));
         else
-            sb.append(PlayerParser.encodeBattlePlayer(player));
+            sb.append(PlayerParser.encodeBattlePlayer("enemy", enemy));
+
+        if (selectMoving)
+            sb.append(PlayerParser.encode("player", my));
+        else
+            sb.append(PlayerParser.encodeBattlePlayer("player", my));
+
         sb.append(sbFirstMove);
         sb.append(MessageFactory.footer(""));
         return sb.toString();
@@ -103,7 +111,7 @@ public class MessageFactory {
         sb1.append(sbMap);
         sb1.append(sbDamage);
         sb1.append(sbFirstMove);
-        sb1.append(PlayerParser.encodeBattlePlayer(player));
+        sb1.append(PlayerParser.encodeBattlePlayer("player", player));
         sb1.append(MessageFactory.footer(""));
         return sb1.toString();
     }

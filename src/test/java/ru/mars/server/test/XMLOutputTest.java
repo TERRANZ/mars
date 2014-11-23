@@ -20,7 +20,7 @@ public class XMLOutputTest extends TestCase {
         logger.info("Pair found message");
         logger.info(MessageFactory.createPairFoundMessage(1));
         logger.info("GameOver message");
-        logger.info(MessageFactory.createGameOverMessage());
+        logger.info(MessageFactory.createGameOverMessage(1));
 
 
         int[][] gemArray = new int[8][8];
@@ -33,9 +33,9 @@ public class XMLOutputTest extends TestCase {
         logger.info(MessageFactory.createDamageMessage(gemArray, 123, true, new Player()));
 
         logger.info("Game state message");
-        logger.info(MessageFactory.createGameStateMessage(gemArray, MessageType.S_GAME_STATE, true, new Player(), true));
+        logger.info(MessageFactory.createGameStateMessage(gemArray, MessageType.S_GAME_STATE, true, new Player(), new Player(), true));
         logger.info("Game state message");
-        logger.info(MessageFactory.createGameStateMessage(gemArray, MessageType.S_GAME_STATE, false, new Player(), false));
+        logger.info(MessageFactory.createGameStateMessage(gemArray, MessageType.S_GAME_STATE, false, new Player(), new Player(), false));
     }
 
     public static int randInt(int min, int max) {
