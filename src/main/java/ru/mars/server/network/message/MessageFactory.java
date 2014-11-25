@@ -81,7 +81,7 @@ public class MessageFactory {
         return sb.toString();
     }
 
-    public static String createDamageMessage(int[][] gemArray, int attackDamage, boolean isSecondPlayerInMove, Player player) {
+    public static String createDamageMessage(int[][] gemArray, int attackDamage, boolean isSecondPlayerInMove, Player enemy, Player my) {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
@@ -111,7 +111,8 @@ public class MessageFactory {
         sb1.append(sbMap);
         sb1.append(sbDamage);
         sb1.append(sbFirstMove);
-        sb1.append(PlayerParser.encodeBattlePlayer("player", player));
+        sb1.append(PlayerParser.encodeBattlePlayer("player", my));
+        sb1.append(PlayerParser.encodeBattlePlayer("enemy", enemy));
         sb1.append(MessageFactory.footer(""));
         return sb1.toString();
     }

@@ -26,6 +26,7 @@ public class PlayerParser {
         player.setLevel(Integer.parseInt(playerElement.getElementsByTagName("level").item(0).getTextContent()));
         player.setLucky(Integer.parseInt(playerElement.getElementsByTagName("lucky").item(0).getTextContent()));
         player.setMaxDamage(Integer.parseInt(playerElement.getElementsByTagName("maxdmg").item(0).getTextContent()));
+        player.setStartMaxDamage(player.getMaxDamage());
         player.setMinDamage(Integer.parseInt(playerElement.getElementsByTagName("mindmg").item(0).getTextContent()));
         player.setStrength(Integer.parseInt(playerElement.getElementsByTagName("str").item(0).getTextContent()));
         player.setWeapon(Integer.parseInt(playerElement.getElementsByTagName("weapon").item(0).getTextContent()));

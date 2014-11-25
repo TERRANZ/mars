@@ -30,7 +30,7 @@ public class XMLOutputTest extends TestCase {
                 gemArray[i][j] = randInt(1, 6);
 
         logger.info("Damage message");
-        logger.info(MessageFactory.createDamageMessage(gemArray, 123, true, new Player()));
+        logger.info(MessageFactory.createDamageMessage(gemArray, 123, true, new Player(), new Player()));
 
         logger.info("Game state message");
         logger.info(MessageFactory.createGameStateMessage(gemArray, MessageType.S_GAME_STATE, true, new Player(), new Player(), true));

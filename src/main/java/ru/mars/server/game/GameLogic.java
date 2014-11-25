@@ -293,6 +293,7 @@ public abstract class GameLogic {
             } else {
                 player2.setDefence(def);
             }
+            player1.setMaxDamage(player1.getStartMaxDamage());
         } else {
             int hp = player1.getHealth();
             int def = player1.getDefence();
@@ -305,6 +306,7 @@ public abstract class GameLogic {
             } else {
                 player1.setDefence(def);
             }
+            player2.setMaxDamage(player2.getStartMaxDamage());
         }
         return dmg;
     }
@@ -330,10 +332,11 @@ public abstract class GameLogic {
     }
 
     private void getAtk(int bonus) {
-        if (!isSecondPlayerInMove)
-            player1.setAttack(player1.getAttack() + 1 + bonus);
-        else
-            player2.setAttack(player2.getAttack() + 1 + bonus);
+        if (!isSecondPlayerInMove) {
+            player1.setMaxDamage(player1.getMaxDamage() + 1 + bonus);
+        } else {
+            player2.setMaxDamage(player1.getMaxDamage() + 1 + bonus);
+        }
     }
 
     private void getDef(int bonus) {

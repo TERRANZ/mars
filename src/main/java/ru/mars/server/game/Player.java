@@ -21,6 +21,7 @@ public class Player {
     private Integer attack = 0;
     private Integer maxDefence = 0;
     private Integer maxHealth = 0;
+    private Integer startMaxDamage = 0;
 
     public Player() {
     }
@@ -152,6 +153,14 @@ public class Player {
 
     public void setMaxHealth(Integer maxHealth) {
         this.maxHealth = maxHealth;
+    }
+
+    public void setStartMaxDamage(Integer startMaxDamage) {
+        this.startMaxDamage = startMaxDamage;
+    }
+
+    public Integer getStartMaxDamage() {
+        return startMaxDamage;
     }
 
     @Override

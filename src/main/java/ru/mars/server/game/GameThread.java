@@ -139,8 +139,8 @@ public class GameThread extends GameLogic implements Runnable {
 
 
     private void sendAttackMessage() {
-        channel1.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player2));
-        channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player1));
+        channel1.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player2, player1));
+        channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage, isSecondPlayerInMove, player1, player2));
     }
 
     private void sendGameOverMessage(Integer deadPlayer) {
