@@ -3,7 +3,10 @@ package ru.mars.server.game;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.w3c.dom.Element;
+import ru.mars.server.network.message.MessageFactory;
+import ru.mars.server.network.message.MessageType;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -22,12 +25,13 @@ public abstract class GameLogic {
     protected boolean isAttack = false;
     protected int attackDamage = 0;
     protected boolean mapGenerate = true;
+    protected volatile boolean game = true;
 
     protected void initMap() {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
                 gemArray[i][j] = randInt(1, 6);
-        checkFields();
+        checkFields(true);
         mapGenerate = false;
     }
 
@@ -214,7 +218,7 @@ public abstract class GameLogic {
         return false;
     }
 
-    protected boolean checkFields() {
+    protected boolean checkFields(boolean init) {
         int linesFound = 1;
         logger.info("Checking fields");
         boolean ret = false;
@@ -225,36 +229,48 @@ public abstract class GameLogic {
                 linesFound++;
                 logger.info("Checking fields: hline5");
                 ret = true;
+                if (!init)
+                    sendMoveStatus();
             } else {
                 if (tryCheckHLine4(false)) {
                     tryCheckHLine4(true);
                     linesFound++;
                     logger.info("Checking fields: hline4");
                     ret = true;
+                    if (!init)
+                        sendMoveStatus();
                 } else {
                     if (tryCheckHLine3(false)) {
                         tryCheckHLine3(true);
                         linesFound++;
                         logger.info("Checking fields: hline3");
                         ret = true;
+                        if (!init)
+                            sendMoveStatus();
                     } else {
                         if (tryCheckVLine5(false)) {
                             tryCheckVLine5(true);
                             linesFound++;
                             logger.info("Checking fields: vline5");
                             ret = true;
+                            if (!init)
+                                sendMoveStatus();
                         } else {
                             if (tryCheckVLine4(false)) {
                                 tryCheckVLine4(true);
                                 linesFound++;
                                 logger.info("Checking fields: vline4");
                                 ret = true;
+                                if (!init)
+                                    sendMoveStatus();
                             } else {
                                 if (tryCheckVLine3(false)) {
                                     tryCheckVLine3(true);
                                     linesFound++;
                                     logger.info("Checking fields: vline3");
                                     ret = true;
+                                    if (!init)
+                                        sendMoveStatus();
                                 }
                             }
                         }
@@ -262,7 +278,57 @@ public abstract class GameLogic {
                 }
             }
         }
-        return true;
+        return ret;
+    }
+
+    public void sendMoveStatus() {
+        if (game) {
+            if (isAttack) {
+                sendAttackMessage(isSecondPlayerInMove);
+                if (player1.getHealth() <= 0) {
+                    game = false;
+                    sendGameOverMessage(1);
+                } else if (player2.getHealth() <= 0) {
+                    game = false;
+                    sendGameOverMessage(2);
+                }
+//                isAttack = false;
+            } else
+                sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while sleep", e);
+            }
+        }
+    }
+
+    protected void sendGameStateToPlayers(boolean selectMoving, int type) {
+        if (selectMoving) {
+            isSecondPlayerInMove = new Date().getTime() % 2 == 0;
+        }
+        channel2.write(MessageFactory.createGameStateMessage(gemArray, type, player1, player2, selectMoving));//второму игроку статы первого и карту
+        channel1.write(MessageFactory.createGameStateMessage(gemArray, type, player2, player1, selectMoving));//первому игроку статы второго и карту
+        if (selectMoving) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
+            channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
+        }
+    }
+
+
+    protected void sendAttackMessage(boolean isSecondPlayerInMove) {
+        channel1.write(MessageFactory.createDamageMessage(gemArray, attackDamage, player2, player1, isSecondPlayerInMove));
+        channel2.write(MessageFactory.createDamageMessage(gemArray, attackDamage, player1, player2, isSecondPlayerInMove));
+    }
+
+    protected void sendGameOverMessage(Integer deadPlayer) {
+        channel1.write(MessageFactory.createGameOverMessage(deadPlayer));
+        channel2.write(MessageFactory.createGameOverMessage(deadPlayer));
     }
 
     protected void doAction(int type, int bonus) {
@@ -270,6 +336,7 @@ public abstract class GameLogic {
             if (type == 1) {
                 isAttack = true;
                 attackDamage = getAttack(bonus);
+                logger.info("Attack damage = " + attackDamage);
             } else if (type == 2) {
                 getAtk(bonus);
             } else if (type == 3) {

@@ -43,7 +43,7 @@ public class MessageFactory {
         return footer(header(MessageType.S_PAIR_FOUND) + "<playerid>" + playerNum + "</playerid>");
     }
 
-    public static String createGameStateMessage(int[][] gemArray, int type, boolean isSecondPlayerInMove, Player enemy, Player my, boolean selectMoving) {
+    public static String createGameStateMessage(int[][] gemArray, int type, Player enemy, Player my, boolean selectMoving) {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
@@ -56,11 +56,6 @@ public class MessageFactory {
         }
         sbMap.delete(sbMap.length() - 1, sbMap.length());
         sbMap.append("</gemArray>");
-        StringBuilder sbFirstMove = new StringBuilder();
-
-        sbFirstMove.append("<moveplayer>");
-        sbFirstMove.append(isSecondPlayerInMove ? 2 : 1);
-        sbFirstMove.append("</moveplayer>");
 
         StringBuilder sb = new StringBuilder();
         sb.append(MessageFactory.header(type));
@@ -76,12 +71,11 @@ public class MessageFactory {
         else
             sb.append(PlayerParser.encodeBattlePlayer("player", my));
 
-        sb.append(sbFirstMove);
         sb.append(MessageFactory.footer(""));
         return sb.toString();
     }
 
-    public static String createDamageMessage(int[][] gemArray, int attackDamage, boolean isSecondPlayerInMove, Player enemy, Player my) {
+    public static String createDamageMessage(int[][] gemArray, int attackDamage, Player enemy, Player my, boolean isSecondPlayerInMove) {
         StringBuilder sbMap = new StringBuilder();
         sbMap.append("<gemArray>");
         for (int i = 0; i < 8; i++) {
@@ -95,22 +89,23 @@ public class MessageFactory {
         sbMap.delete(sbMap.length() - 1, sbMap.length());
         sbMap.append("</gemArray>");
 
-        StringBuilder sbFirstMove = new StringBuilder();
-        sbFirstMove.append("<moveplayer>");
-        sbFirstMove.append(isSecondPlayerInMove ? 2 : 1);
-        sbFirstMove.append("</moveplayer>");
-
         StringBuilder sbDamage = new StringBuilder();
 
         sbDamage.append("<damage>");
         sbDamage.append(attackDamage);
         sbDamage.append("</damage>");
 
+        StringBuilder pid = new StringBuilder();
+        pid.append("<pid>");
+        pid.append(isSecondPlayerInMove ? "1" : "2");
+        pid.append("</pid>");
+
+
         StringBuilder sb1 = new StringBuilder();
         sb1.append(MessageFactory.header(MessageType.S_LINE_DAMAGE));
         sb1.append(sbMap);
         sb1.append(sbDamage);
-        sb1.append(sbFirstMove);
+        sb1.append(pid);
         sb1.append(PlayerParser.encodeBattlePlayer("player", my));
         sb1.append(PlayerParser.encodeBattlePlayer("enemy", enemy));
         sb1.append(MessageFactory.footer(""));
@@ -119,5 +114,10 @@ public class MessageFactory {
 
     public static String createMoveMessage(String dir, Integer line) {
         return footer(header(MessageType.S_PLAYER_MOVE) + "<move><dir>" + dir + "</dir><line>" + line + "</line></move>");
+    }
+
+    public static String createSetMovePlayer(boolean isSecondPlayerInMove) {
+        String movePlayer = isSecondPlayerInMove ? "2" : "1";
+        return footer(header(MessageType.S_SET_MOVE_PLAYER) + "<moveplayer>" + movePlayer + "</moveplayer>");
     }
 }
