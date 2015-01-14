@@ -9,11 +9,13 @@ import java.io.IOException;
 
 public class Main {
 
-    public class Parameters {
+    public static class Parameters {
         @Parameter(names = {"-g"}, description = "Game server port")
         private Integer gameServerPort = 56777;
         @Parameter(names = {"-p"}, description = "Policy server port")
         private Integer policyServerPort = 1008;
+        @Parameter(names = "--help", help = true)
+        private boolean help;
 
         public Integer getGameServerPort() {
             return gameServerPort;
@@ -34,18 +36,15 @@ public class Main {
 
 
     public static void main(String args[]) throws IOException, InterruptedException {
-        new Main().start(args);
-    }
-
-    public void start(String args[]) {
         final Parameters parameters = new Parameters();
         new JCommander(parameters, args);
-        new PolicyServer(parameters.getPolicyServerPort(), new String[]{"*:" + parameters.getGameServerPort()}).start();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                new PolicyServer(parameters.getPolicyServerPort(), new String[]{"*:" + parameters.getGameServerPort()}).start();
                 new GameServer(parameters.getGameServerPort()).start();
             }
         }).start();
     }
+
 }

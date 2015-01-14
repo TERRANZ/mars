@@ -230,7 +230,12 @@ public abstract class GameLogic {
                 logger.info("Checking fields: hline5");
                 ret = true;
                 if (!init)
-                    sendMoveStatus();
+                    try {
+                        sendMoveStatus();
+                    } catch (GameOverException e) {
+                        logger.debug("Game is over");
+                        return ret;
+                    }
             } else {
                 if (tryCheckHLine4(false)) {
                     tryCheckHLine4(true);
@@ -238,7 +243,12 @@ public abstract class GameLogic {
                     logger.info("Checking fields: hline4");
                     ret = true;
                     if (!init)
-                        sendMoveStatus();
+                        try {
+                            sendMoveStatus();
+                        } catch (GameOverException e) {
+                            logger.debug("Game is over");
+                            return ret;
+                        }
                 } else {
                     if (tryCheckHLine3(false)) {
                         tryCheckHLine3(true);
@@ -246,7 +256,12 @@ public abstract class GameLogic {
                         logger.info("Checking fields: hline3");
                         ret = true;
                         if (!init)
-                            sendMoveStatus();
+                            try {
+                                sendMoveStatus();
+                            } catch (GameOverException e) {
+                                logger.debug("Game is over");
+                                return ret;
+                            }
                     } else {
                         if (tryCheckVLine5(false)) {
                             tryCheckVLine5(true);
@@ -254,7 +269,12 @@ public abstract class GameLogic {
                             logger.info("Checking fields: vline5");
                             ret = true;
                             if (!init)
-                                sendMoveStatus();
+                                try {
+                                    sendMoveStatus();
+                                } catch (GameOverException e) {
+                                    logger.debug("Game is over");
+                                    return ret;
+                                }
                         } else {
                             if (tryCheckVLine4(false)) {
                                 tryCheckVLine4(true);
@@ -262,7 +282,12 @@ public abstract class GameLogic {
                                 logger.info("Checking fields: vline4");
                                 ret = true;
                                 if (!init)
-                                    sendMoveStatus();
+                                    try {
+                                        sendMoveStatus();
+                                    } catch (GameOverException e) {
+                                        logger.debug("Game is over");
+                                        return ret;
+                                    }
                             } else {
                                 if (tryCheckVLine3(false)) {
                                     tryCheckVLine3(true);
@@ -270,7 +295,12 @@ public abstract class GameLogic {
                                     logger.info("Checking fields: vline3");
                                     ret = true;
                                     if (!init)
-                                        sendMoveStatus();
+                                        try {
+                                            sendMoveStatus();
+                                        } catch (GameOverException e) {
+                                            logger.debug("Game is over");
+                                            return ret;
+                                        }
                                 }
                             }
                         }
@@ -281,16 +311,18 @@ public abstract class GameLogic {
         return ret;
     }
 
-    public void sendMoveStatus() {
+    public void sendMoveStatus() throws GameOverException {
         if (game) {
             if (isAttack) {
                 sendAttackMessage(isSecondPlayerInMove);
                 if (player1.getHealth() <= 0) {
                     game = false;
                     sendGameOverMessage(1);
+                    throw new GameOverException();
                 } else if (player2.getHealth() <= 0) {
                     game = false;
                     sendGameOverMessage(2);
+                    throw new GameOverException();
                 }
 //                isAttack = false;
             } else

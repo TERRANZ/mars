@@ -1,5 +1,6 @@
 package ru.mars.server.network;
 
+import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
@@ -17,12 +18,14 @@ import java.util.concurrent.Executors;
  */
 public class GameServer {
     private int port;
+    protected Logger logger = Logger.getLogger(this.getClass());
 
     public GameServer(int port) {
         this.port = port;
     }
 
     public void start() {
+        logger.debug("Starting game server on " + port);
         ServerBootstrap bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
         bootstrap.setPipelineFactory(new GameServerPipeLineFactory());
         Channel channel = bootstrap.bind(new InetSocketAddress(port));

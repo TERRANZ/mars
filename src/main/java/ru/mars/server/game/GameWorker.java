@@ -50,7 +50,8 @@ public class GameWorker {
 
     public synchronized void removePlayer(Channel channel) {
         if (playerMap.containsKey(channel)) {
-            gameThreadMap.get(channel).playerDisconnect(channel);
+            if (gameThreadMap.get(channel) != null)
+                gameThreadMap.get(channel).playerDisconnect(channel);
             gameStateMap.remove(channel);
             playerMap.remove(channel);
         }
