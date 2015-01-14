@@ -15,8 +15,6 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -29,14 +27,12 @@ public class GameWorker {
     private Map<Channel, GameState> gameStateMap = new HashMap<>();
     private Map<Channel, Player> playerMap = new HashMap<>();
     private Map<Future, Channel> finders = new WeakHashMap<>();
-    private ExecutorService service;
     private Map<Channel, GameThread> gameThreadMap = new HashMap<>();
     protected PairFinder pairFinder;
 
     private GameWorker() {
-        service = Executors.newFixedThreadPool(11);
         pairFinder = new PairFinder();
-        service.submit(pairFinder);
+        new Thread(pairFinder).start();
     }
 
     public static GameWorker getInstance() {
@@ -111,7 +107,7 @@ public class GameWorker {
                     if (gameThread != null) {
                         gameThread.setPlayerReady(channel);
                         if (gameThread.isAllReady())
-                            service.submit(gameThread);
+                            new Thread(gameThread).start();
                     }
 
                 }
