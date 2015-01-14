@@ -1,39 +1,51 @@
 package ru.mars.server;
 
-import org.apache.log4j.Logger;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 import ru.mars.server.network.GameServer;
 import ru.mars.server.network.policyserver.PolicyServer;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Properties;
 
 public class Main {
-    private static int PORT_OF_GAME_SERVER;
-    private static int PORT_OF_CHAT_SERVER;
-    private static int PORT_OF_POLICY_SERVER = 1008;
-    private static Logger logger = Logger.getLogger(Main.class);
+
+    public class Parameters {
+        @Parameter(names = {"-g"}, description = "Game server port")
+        private Integer gameServerPort = 56777;
+        @Parameter(names = {"-p"}, description = "Policy server port")
+        private Integer policyServerPort = 1008;
+
+        public Integer getGameServerPort() {
+            return gameServerPort;
+        }
+
+        public void setGameServerPort(Integer gameServerPort) {
+            this.gameServerPort = gameServerPort;
+        }
+
+        public Integer getPolicyServerPort() {
+            return policyServerPort;
+        }
+
+        public void setPolicyServerPort(Integer policyServerPort) {
+            this.policyServerPort = policyServerPort;
+        }
+    }
+
 
     public static void main(String args[]) throws IOException, InterruptedException {
-        //BasicConfigurator.configure();
-        initServerProperties();
-        new PolicyServer(PORT_OF_POLICY_SERVER, new String[]{"*:" + PORT_OF_GAME_SERVER + "," + PORT_OF_CHAT_SERVER}).start();
+        new Main().start(args);
+    }
+
+    public void start(String args[]) {
+        final Parameters parameters = new Parameters();
+        new JCommander(parameters, args);
+        new PolicyServer(parameters.getPolicyServerPort(), new String[]{"*:" + parameters.getGameServerPort()}).start();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                new GameServer(PORT_OF_GAME_SERVER).start();
+                new GameServer(parameters.getGameServerPort()).start();
             }
         }).start();
-
-    }
-
-    private static void initServerProperties() throws IOException {
-        logger.info("read file server.txt from " + new File("").getAbsolutePath());
-        FileReader reader = new FileReader(new File("server.txt"));
-        Properties properties = new Properties();
-        properties.load(reader);
-        PORT_OF_GAME_SERVER = Integer.valueOf(properties.getProperty("gamePort"));
-        PORT_OF_CHAT_SERVER = Integer.valueOf(properties.getProperty("chatPort"));
     }
 }

@@ -1,5 +1,0 @@
-host = localhost
-port = 3306
-dbName = c0game
-username = c0game
-password = game
