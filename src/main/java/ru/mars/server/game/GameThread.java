@@ -102,11 +102,14 @@ public class GameThread extends GameLogic implements Runnable {
                 break;
             }
             isAttack = false;
-            boolean check = checkFields(false);
-//            if (check)
-            isSecondPlayerInMove = !isSecondPlayerInMove;
-            channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
-            channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
+            try {
+                boolean check = checkFields(false);
+                isSecondPlayerInMove = !isSecondPlayerInMove;
+                channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
+                channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
+            } catch (GameOverException e) {
+                logger.debug("Game is over");
+            }
         }
     }
 }

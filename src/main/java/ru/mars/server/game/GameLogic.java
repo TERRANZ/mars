@@ -31,7 +31,11 @@ public abstract class GameLogic {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
                 gemArray[i][j] = randInt(1, 6);
-        checkFields(true);
+        try {
+            checkFields(true);
+        } catch (GameOverException e) {
+            e.printStackTrace();
+        }
         mapGenerate = false;
     }
 
@@ -218,7 +222,7 @@ public abstract class GameLogic {
         return false;
     }
 
-    protected boolean checkFields(boolean init) {
+    protected boolean checkFields(boolean init) throws GameOverException {
         int linesFound = 1;
         logger.info("Checking fields");
         boolean ret = false;
@@ -230,12 +234,7 @@ public abstract class GameLogic {
                 logger.info("Checking fields: hline5");
                 ret = true;
                 if (!init)
-                    try {
-                        sendMoveStatus();
-                    } catch (GameOverException e) {
-                        logger.debug("Game is over");
-                        return ret;
-                    }
+                    sendMoveStatus();
             } else {
                 if (tryCheckHLine4(false)) {
                     tryCheckHLine4(true);
@@ -243,12 +242,7 @@ public abstract class GameLogic {
                     logger.info("Checking fields: hline4");
                     ret = true;
                     if (!init)
-                        try {
-                            sendMoveStatus();
-                        } catch (GameOverException e) {
-                            logger.debug("Game is over");
-                            return ret;
-                        }
+                        sendMoveStatus();
                 } else {
                     if (tryCheckHLine3(false)) {
                         tryCheckHLine3(true);
@@ -256,12 +250,7 @@ public abstract class GameLogic {
                         logger.info("Checking fields: hline3");
                         ret = true;
                         if (!init)
-                            try {
-                                sendMoveStatus();
-                            } catch (GameOverException e) {
-                                logger.debug("Game is over");
-                                return ret;
-                            }
+                            sendMoveStatus();
                     } else {
                         if (tryCheckVLine5(false)) {
                             tryCheckVLine5(true);
@@ -269,12 +258,7 @@ public abstract class GameLogic {
                             logger.info("Checking fields: vline5");
                             ret = true;
                             if (!init)
-                                try {
-                                    sendMoveStatus();
-                                } catch (GameOverException e) {
-                                    logger.debug("Game is over");
-                                    return ret;
-                                }
+                                sendMoveStatus();
                         } else {
                             if (tryCheckVLine4(false)) {
                                 tryCheckVLine4(true);
@@ -282,12 +266,7 @@ public abstract class GameLogic {
                                 logger.info("Checking fields: vline4");
                                 ret = true;
                                 if (!init)
-                                    try {
-                                        sendMoveStatus();
-                                    } catch (GameOverException e) {
-                                        logger.debug("Game is over");
-                                        return ret;
-                                    }
+                                    sendMoveStatus();
                             } else {
                                 if (tryCheckVLine3(false)) {
                                     tryCheckVLine3(true);
@@ -295,12 +274,7 @@ public abstract class GameLogic {
                                     logger.info("Checking fields: vline3");
                                     ret = true;
                                     if (!init)
-                                        try {
-                                            sendMoveStatus();
-                                        } catch (GameOverException e) {
-                                            logger.debug("Game is over");
-                                            return ret;
-                                        }
+                                        sendMoveStatus();
                                 }
                             }
                         }
