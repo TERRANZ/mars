@@ -31,9 +31,12 @@ public class GameWorker {
     private Map<Future, Channel> finders = new WeakHashMap<>();
     private ExecutorService service;
     private Map<Channel, GameThread> gameThreadMap = new HashMap<>();
+    protected PairFinder pairFinder;
 
     private GameWorker() {
-        service = Executors.newFixedThreadPool(10);
+        service = Executors.newFixedThreadPool(11);
+        pairFinder = new PairFinder();
+        service.submit(pairFinder);
     }
 
     public static GameWorker getInstance() {
@@ -84,8 +87,6 @@ public class GameWorker {
                     PlayerParser.parse(playerMap.get(channel), root);
                     gameStateMap.put(channel, GameState.LOGGED_IN);
                     channel.write(MessageFactory.createWaitMessage());
-                    PairFinder pairFinder = new PairFinder(channel, playerMap.get(channel));
-                    finders.put(service.submit(pairFinder), channel);
                     logger.info("Received player info: " + playerMap.get(channel).toString());
                 }
                 break;
@@ -109,7 +110,7 @@ public class GameWorker {
                     if (gameThread != null) {
                         gameThread.setPlayerReady(channel);
                         if (gameThread.isAllReady())
-                            new Thread(gameThread).start();//запускам игру, оба игрока готовы
+                            service.submit(gameThread);
                     }
 
                 }
@@ -152,5 +153,11 @@ public class GameWorker {
 
     public synchronized Statistic getStatistic() {
         return new Statistic(getPlayerMap().size(), gameThreadMap.size() > 0 ? gameThreadMap.size() / 2 : 0);
+    }
+
+    public Player getPlayer(Channel channel) {
+        synchronized (playerMap) {
+            return playerMap.get(channel);
+        }
     }
 }

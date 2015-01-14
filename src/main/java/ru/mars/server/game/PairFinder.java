@@ -10,53 +10,44 @@ import ru.mars.server.network.message.MessageFactory;
  */
 public class PairFinder implements Runnable {
 
-    private Channel playerChannel;
-    private Player player;
     protected Logger logger = Logger.getLogger(this.getClass());
-
-    public PairFinder(Channel playerChannel, Player player) {
-        this.playerChannel = playerChannel;
-        this.player = player;
-    }
 
     @Override
     public void run() {
-        int maxDiff = 1;
         while (true) {
-            for (Channel channel : GameWorker.getInstance().getPlayerMap().keySet()) {
-                if (!channel.equals(playerChannel) && GameWorker.getInstance().getPlayerState(channel).equals(GameState.LOGGED_IN)) {
-                    Player p = GameWorker.getInstance().getPlayerMap().get(channel);
-                    if (!p.isInGame()) {
-                        int diff = Math.abs(p.getLevel() - player.getLevel());
-                        if (diff <= maxDiff) {
-                            //пара найдена, разница в уровенях около 1
-//                            new Thread(new GameThread(playerChannel, channel, player, p)).start();
+            try {
+                if (GameWorker.getInstance().getPlayerMap().size() > 1) {
+                    Channel chan1 = null, chan2 = null;
+                    for (Channel channel : GameWorker.getInstance().getPlayerMap().keySet()) {
+                        if (GameWorker.getInstance().getPlayerState(channel).equals(GameState.LOGGED_IN))
+                            if (chan1 == null)
+                                chan1 = channel;
+                            else if (chan2 == null && !chan1.equals(channel))
+                                chan2 = channel;
+                        if (chan1 != null && chan2 != null) {
                             try {
-                                playerChannel.write(MessageFactory.createPairFoundMessage(1));
-                                channel.write(MessageFactory.createPairFoundMessage(2));
-                                GameThread gameThread = new GameThread(playerChannel, channel, player, p);
+                                chan1.write(MessageFactory.createPairFoundMessage(1));
+                                chan2.write(MessageFactory.createPairFoundMessage(2));
+                                GameThread gameThread = new GameThread(chan1, chan2, GameWorker.getInstance().getPlayer(chan1), GameWorker.getInstance().getPlayer(chan2));
                                 //добавляем для каналов игру
-                                GameWorker.getInstance().addGameThreadForChannel(playerChannel, gameThread);
-                                GameWorker.getInstance().addGameThreadForChannel(channel, gameThread);
-                                GameWorker.getInstance().setPlayerState(playerChannel, GameState.GAME_LOADING);
-                                GameWorker.getInstance().setPlayerState(channel, GameState.GAME_LOADING);
+                                GameWorker.getInstance().addGameThreadForChannel(chan1, gameThread);
+                                GameWorker.getInstance().addGameThreadForChannel(chan2, gameThread);
+                                GameWorker.getInstance().setPlayerState(chan1, GameState.GAME_LOADING);
+                                GameWorker.getInstance().setPlayerState(chan2, GameState.GAME_LOADING);
                             } catch (Exception e) {
                                 logger.error("Unable to send pair message", e);
                             }
-
-                            return;
                         }
                     }
                 }
+            } catch (Exception e) {
+                logger.error("Error while finding pair", e);
             }
             try {
-                Thread.sleep(60000);//засыпаем на минуту, если не найдена пара и увеличиваем разброс
+                Thread.sleep(500);//засыпаем на полсекунды, если не найдена пара
             } catch (InterruptedException e) {
-                Logger.getLogger(this.getClass()).error("Interrupted while sleeping", e);
+                logger.error("Interrupted while sleeping", e);
             }
-            maxDiff++;
-            if (maxDiff > 2)
-                maxDiff = 1;
         }
     }
 }

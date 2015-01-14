@@ -7,8 +7,6 @@ import org.w3c.dom.NodeList;
 import ru.mars.server.network.message.MessageFactory;
 import ru.mars.server.network.message.MessageType;
 
-import java.util.Date;
-
 /**
  * Date: 01.11.14
  * Time: 21:58
@@ -42,7 +40,8 @@ public class GameThread extends GameLogic implements Runnable {
     public synchronized void playerDisconnect(Channel channel) {
         if (channel.equals(channel1)) {
             try {
-                channel2.write(MessageFactory.createGameOverMessage(2));
+                if (channel2.isOpen())
+                    channel2.write(MessageFactory.createGameOverMessage(2));
                 GameWorker.getInstance().setPlayerState(channel2, GameState.LOGIN);
             } catch (Exception e) {
                 logger.error("Unable to send player disconnection message to channel2", e);
@@ -50,7 +49,8 @@ public class GameThread extends GameLogic implements Runnable {
 
         } else {
             try {
-                channel1.write(MessageFactory.createGameOverMessage(1));
+                if (channel1.isOpen())
+                    channel1.write(MessageFactory.createGameOverMessage(1));
                 GameWorker.getInstance().setPlayerState(channel1, GameState.LOGIN);
             } catch (Exception e) {
                 logger.error("Unable to send player disconnection message to channel1", e);
@@ -104,7 +104,7 @@ public class GameThread extends GameLogic implements Runnable {
             isAttack = false;
             boolean check = checkFields(false);
 //            if (check)
-                isSecondPlayerInMove = !isSecondPlayerInMove;
+            isSecondPlayerInMove = !isSecondPlayerInMove;
             channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
             channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
         }
