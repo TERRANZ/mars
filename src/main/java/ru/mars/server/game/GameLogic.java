@@ -306,7 +306,7 @@ public abstract class GameLogic {
                     sendGameOverMessage(2);
                     throw new GameOverException();
                 }
-//                isAttack = false;
+                isAttack = false;
             } else
                 sendGameStateToPlayers(false, MessageType.S_LINE_MOVE);
             try {

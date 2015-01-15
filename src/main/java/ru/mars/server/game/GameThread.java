@@ -115,6 +115,8 @@ public class GameThread extends GameLogic implements Runnable {
                     logger.debug("Game is over");
                 GameWorker.getInstance().removePlayerGame(channel1);
                 GameWorker.getInstance().removePlayerGame(channel2);
+                GameWorker.getInstance().setPlayerState(channel1, GameState.GAME_END);
+                GameWorker.getInstance().setPlayerState(channel2, GameState.GAME_END);
             }
         }
     }

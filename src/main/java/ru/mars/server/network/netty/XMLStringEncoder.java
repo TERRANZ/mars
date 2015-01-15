@@ -23,7 +23,8 @@ public class XMLStringEncoder extends OneToOneEncoder {
         ChannelBuffer buffer = copiedBuffer((String) msg, Charset.defaultCharset());
         buffer.writeByte((byte) 0x00);
         if (Parameters.getInstance().isDebug())
-            logger.info("Writing message: " + ((String) msg));
+            if (!((String) msg).contains("<text> hello </text>"))
+                logger.info("Writing message: " + ((String) msg));
         return buffer;
     }
 }

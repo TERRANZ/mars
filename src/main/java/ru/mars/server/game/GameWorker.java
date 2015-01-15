@@ -15,7 +15,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.Future;
 
 /**
  * Date: 01.11.14
@@ -56,7 +55,8 @@ public class GameWorker {
 
     public synchronized void handlePlayerCommand(Channel channel, String xml) {
         if (Parameters.getInstance().isDebug())
-            logger.info("Received xml = " + xml + " from channel " + channel.toString());
+            if (!xml.contains("<id>0</id>"))
+                logger.info("Received xml = " + xml + " from channel " + channel.toString());
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = null;
         Document doc = null;
@@ -81,7 +81,7 @@ public class GameWorker {
                 break;
 
                 case MessageType.C_PLAYER_INFO: {
-                    if (!gameStateMap.get(channel).equals(GameState.LOGIN))
+                    if (!gameStateMap.get(channel).equals(GameState.LOGIN) || !gameStateMap.get(channel).equals(GameState.GAME_END))
                         return;//TODO: exception?
                     PlayerParser.parse(playerMap.get(channel), root);
                     gameStateMap.put(channel, GameState.LOGGED_IN);
