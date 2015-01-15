@@ -1,6 +1,5 @@
 package ru.mars.server.game;
 
-import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.w3c.dom.Element;
 import ru.mars.server.network.message.MessageFactory;
@@ -20,7 +19,7 @@ public abstract class GameLogic {
     protected Player player1, player2;
     protected int[][] gemArray = new int[8][8];
     protected Map<Channel, Boolean> playerReady = new HashMap<>();
-    protected Logger logger = Logger.getLogger(this.getClass());
+    //    protected Logger logger = Logger.getLogger(this.getClass());
     protected boolean isSecondPlayerInMove = false;
     protected boolean isAttack = false;
     protected int attackDamage = 0;
@@ -224,14 +223,14 @@ public abstract class GameLogic {
 
     protected boolean checkFields(boolean init) throws GameOverException {
         int linesFound = 1;
-        logger.info("Checking fields");
+//        logger.info("Checking fields");
         boolean ret = false;
         while (linesFound > 0) {
             linesFound = 0;
             if (tryCheckHLine5(false)) {
                 tryCheckHLine5(true);
                 linesFound++;
-                logger.info("Checking fields: hline5");
+//                logger.info("Checking fields: hline5");
                 ret = true;
                 if (!init)
                     sendMoveStatus();
@@ -239,7 +238,7 @@ public abstract class GameLogic {
                 if (tryCheckHLine4(false)) {
                     tryCheckHLine4(true);
                     linesFound++;
-                    logger.info("Checking fields: hline4");
+//                    logger.info("Checking fields: hline4");
                     ret = true;
                     if (!init)
                         sendMoveStatus();
@@ -247,7 +246,7 @@ public abstract class GameLogic {
                     if (tryCheckHLine3(false)) {
                         tryCheckHLine3(true);
                         linesFound++;
-                        logger.info("Checking fields: hline3");
+//                        logger.info("Checking fields: hline3");
                         ret = true;
                         if (!init)
                             sendMoveStatus();
@@ -255,7 +254,7 @@ public abstract class GameLogic {
                         if (tryCheckVLine5(false)) {
                             tryCheckVLine5(true);
                             linesFound++;
-                            logger.info("Checking fields: vline5");
+//                            logger.info("Checking fields: vline5");
                             ret = true;
                             if (!init)
                                 sendMoveStatus();
@@ -263,7 +262,7 @@ public abstract class GameLogic {
                             if (tryCheckVLine4(false)) {
                                 tryCheckVLine4(true);
                                 linesFound++;
-                                logger.info("Checking fields: vline4");
+//                                logger.info("Checking fields: vline4");
                                 ret = true;
                                 if (!init)
                                     sendMoveStatus();
@@ -271,7 +270,7 @@ public abstract class GameLogic {
                                 if (tryCheckVLine3(false)) {
                                     tryCheckVLine3(true);
                                     linesFound++;
-                                    logger.info("Checking fields: vline3");
+//                                    logger.info("Checking fields: vline3");
                                     ret = true;
                                     if (!init)
                                         sendMoveStatus();
@@ -304,7 +303,7 @@ public abstract class GameLogic {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                logger.error("Interrupted while sleep", e);
+//                logger.error("Interrupted while sleep", e);
             }
         }
     }
@@ -319,7 +318,7 @@ public abstract class GameLogic {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+//                logger.error("Interrupted while sleep", e);
             }
             channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
             channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
@@ -342,7 +341,7 @@ public abstract class GameLogic {
             if (type == 1) {
                 isAttack = true;
                 attackDamage = getAttack(bonus);
-                logger.info("Attack damage = " + attackDamage);
+//                logger.info("Attack damage = " + attackDamage);
             } else if (type == 2) {
                 getAtk(bonus);
             } else if (type == 3) {

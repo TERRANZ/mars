@@ -15,13 +15,13 @@ import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
  * Time: 17:43
  */
 public class XMLStringEncoder extends OneToOneEncoder {
-    private Logger logger = Logger.getLogger(this.getClass());
+//    private Logger logger = Logger.getLogger(this.getClass());
 
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
         ChannelBuffer buffer = copiedBuffer((String) msg, Charset.defaultCharset());
         buffer.writeByte((byte) 0x00);
-        logger.info("Writing message: " + ((String) msg));
+//        logger.info("Writing message: " + ((String) msg));
         return buffer;
     }
 }

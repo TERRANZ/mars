@@ -32,7 +32,7 @@ public class GameThread extends GameLogic implements Runnable {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                logger.error("Interrupted while sleep", e);
+//                logger.error("Interrupted while sleep", e);
             }
         }
     }
@@ -41,19 +41,19 @@ public class GameThread extends GameLogic implements Runnable {
         if (channel.equals(channel1)) {
             try {
                 if (channel2.isOpen())
-                    channel2.write(MessageFactory.createGameOverMessage(2));
+                    channel2.write(MessageFactory.createGameOverMessage(1));
                 GameWorker.getInstance().setPlayerState(channel2, GameState.LOGIN);
             } catch (Exception e) {
-                logger.error("Unable to send player disconnection message to channel2", e);
+//                logger.error("Unable to send player disconnection message to channel2", e);
             }
 
         } else {
             try {
                 if (channel1.isOpen())
-                    channel1.write(MessageFactory.createGameOverMessage(1));
+                    channel1.write(MessageFactory.createGameOverMessage(2));
                 GameWorker.getInstance().setPlayerState(channel1, GameState.LOGIN);
             } catch (Exception e) {
-                logger.error("Unable to send player disconnection message to channel1", e);
+//                logger.error("Unable to send player disconnection message to channel1", e);
             }
         }
         game = false;
@@ -62,15 +62,15 @@ public class GameThread extends GameLogic implements Runnable {
     public synchronized void playerMove(Channel channel, Element rootElement) {
         NodeList moveNodeList = rootElement.getElementsByTagName("move");
         Node moveNode = moveNodeList.item(0);
-        if (moveNode == null)
-            logger.error("Provided xml is invalid: no move node");
-        else {
+        if (moveNode == null) {
+//            logger.error("Provided xml is invalid: no move node");
+        } else {
             Element moveElement = (Element) moveNode;
             String moveDir = moveElement.getElementsByTagName("dir").item(0).getTextContent();
             Integer moveLine = Integer.parseInt(moveElement.getElementsByTagName("line").item(0).getTextContent());
             boolean firstPlayer = channel.equals(channel1);
             String player = firstPlayer ? "player1" : "player2";
-            logger.info("Player " + player + " doing move : " + moveDir + " line = " + moveLine);
+//            logger.info("Player " + player + " doing move : " + moveDir + " line = " + moveLine);
 
             if (firstPlayer)
                 channel2.write(MessageFactory.createMoveMessage(moveDir, moveLine));
@@ -80,7 +80,7 @@ public class GameThread extends GameLogic implements Runnable {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                logger.error("Sleep interruption", e);
+//                logger.error("Sleep interruption", e);
             }
 
             switch (moveDir) {
@@ -108,7 +108,7 @@ public class GameThread extends GameLogic implements Runnable {
                 channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
                 channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
             } catch (GameOverException e) {
-                logger.debug("Game is over");
+//                logger.debug("Game is over");
             }
         }
     }

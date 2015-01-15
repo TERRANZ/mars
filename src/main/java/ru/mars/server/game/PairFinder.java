@@ -10,7 +10,7 @@ import ru.mars.server.network.message.MessageFactory;
  */
 public class PairFinder implements Runnable {
 
-    protected Logger logger = Logger.getLogger(this.getClass());
+//    protected Logger logger = Logger.getLogger(this.getClass());
 
     @Override
     public void run() {
@@ -35,18 +35,18 @@ public class PairFinder implements Runnable {
                                 GameWorker.getInstance().setPlayerState(chan1, GameState.GAME_LOADING);
                                 GameWorker.getInstance().setPlayerState(chan2, GameState.GAME_LOADING);
                             } catch (Exception e) {
-                                logger.error("Unable to send pair message", e);
+//                                logger.error("Unable to send pair message", e);
                             }
                         }
                     }
                 }
             } catch (Exception e) {
-                logger.error("Error while finding pair", e);
+//                logger.error("Error while finding pair", e);
             }
             try {
                 Thread.sleep(500);//засыпаем на полсекунды, если не найдена пара
             } catch (InterruptedException e) {
-                logger.error("Interrupted while sleeping", e);
+//                logger.error("Interrupted while sleeping", e);
             }
         }
     }

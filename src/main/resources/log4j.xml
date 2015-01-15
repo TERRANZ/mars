@@ -21,22 +21,22 @@
     <logger name="ru">
         <level value="trace"/>
         <appender-ref ref="file"/>
-        <appender-ref ref="console"/>
+        <!--<appender-ref ref="console"/>-->
     </logger>
     <logger name="com">
         <level value="trace"/>
         <appender-ref ref="file"/>
-        <appender-ref ref="console"/>
+        <!--<appender-ref ref="console"/>-->
     </logger>
     <!-- Application Loggers -->
     <logger name="org">
         <level value="info"/>
         <appender-ref ref="file"/>
-        <appender-ref ref="console"/>
+        <!--<appender-ref ref="console"/>-->
     </logger>
     <logger name="test">
         <level value="info"/>
         <appender-ref ref="file"/>
-        <appender-ref ref="console"/>
+        <!--<appender-ref ref="console"/>-->
     </logger>
 </log4j:configuration>

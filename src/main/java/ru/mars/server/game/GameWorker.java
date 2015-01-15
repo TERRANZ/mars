@@ -12,7 +12,6 @@ import ru.mars.server.parser.PlayerParser;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Future;
@@ -23,11 +22,11 @@ import java.util.concurrent.Future;
  */
 public class GameWorker {
     private static GameWorker instance = new GameWorker();
-    private Logger logger = Logger.getLogger(this.getClass());
-    private Map<Channel, GameState> gameStateMap = new HashMap<>();
-    private Map<Channel, Player> playerMap = new HashMap<>();
+//    private Logger logger = Logger.getLogger(this.getClass());
+    private Map<Channel, GameState> gameStateMap = new WeakHashMap<>();
+    private Map<Channel, Player> playerMap = new WeakHashMap<>();
     private Map<Future, Channel> finders = new WeakHashMap<>();
-    private Map<Channel, GameThread> gameThreadMap = new HashMap<>();
+    private Map<Channel, GameThread> gameThreadMap = new WeakHashMap<>();
     protected PairFinder pairFinder;
 
     private GameWorker() {
@@ -54,7 +53,7 @@ public class GameWorker {
     }
 
     public synchronized void handlePlayerCommand(Channel channel, String xml) {
-        logger.info("Received xml = " + xml + " from channel " + channel.toString());
+//        logger.info("Received xml = " + xml + " from channel " + channel.toString());
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = null;
         Document doc = null;
@@ -65,7 +64,7 @@ public class GameWorker {
             doc = dBuilder.parse(is);
             doc.getDocumentElement().normalize();
         } catch (Exception e) {
-            logger.error("Unable to parse xml", e);
+//            logger.error("Unable to parse xml", e);
         }
 
         if (doc != null) {
@@ -73,7 +72,6 @@ public class GameWorker {
             Integer command = Integer.parseInt(root.getElementsByTagName("id").item(0).getTextContent());
             switch (command) {
                 case MessageType.C_PING: {
-                    logger.info("PING");
                     channel.write(MessageFactory.createPingMessage(getStatistic()));
                 }
                 break;
@@ -84,13 +82,13 @@ public class GameWorker {
                     PlayerParser.parse(playerMap.get(channel), root);
                     gameStateMap.put(channel, GameState.LOGGED_IN);
                     channel.write(MessageFactory.createWaitMessage());
-                    logger.info("Received player info: " + playerMap.get(channel).toString());
+//                    logger.info("Received player info: " + playerMap.get(channel).toString());
                 }
                 break;
                 case MessageType.C_PLAYER_CANCEL_WAIT: {
                     if (!gameStateMap.get(channel).equals(GameState.LOGGED_IN))
                         return;//TODO: exception?
-                    logger.info("Player cancelled waiting");
+//                    logger.info("Player cancelled waiting");
                     gameStateMap.put(channel, GameState.LOGIN);
 //                    gameStateMap.remove(channel);
 //                    channel.write(MessageFactory.createGameOverMessage());
