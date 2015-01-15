@@ -81,7 +81,7 @@ public class GameWorker {
                 break;
 
                 case MessageType.C_PLAYER_INFO: {
-                    if (!gameStateMap.get(channel).equals(GameState.LOGIN) || !gameStateMap.get(channel).equals(GameState.GAME_END))
+                    if (!gameStateMap.get(channel).equals(GameState.LOGIN) && !gameStateMap.get(channel).equals(GameState.GAME_END))
                         return;//TODO: exception?
                     PlayerParser.parse(playerMap.get(channel), root);
                     gameStateMap.put(channel, GameState.LOGGED_IN);
