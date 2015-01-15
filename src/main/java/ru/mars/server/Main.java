@@ -8,8 +8,9 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String args[]) throws IOException, InterruptedException {
-        final Parameters parameters = new Parameters();
+        final Parameters parameters = Parameters.getInstance();
         new JCommander(parameters, args);
+        System.out.println(parameters.isDebug());
         new Thread(new Runnable() {
             @Override
             public void run() {

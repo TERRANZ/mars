@@ -4,6 +4,7 @@ import org.jboss.netty.channel.Channel;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import ru.mars.server.Parameters;
 import ru.mars.server.network.message.MessageFactory;
 import ru.mars.server.network.message.MessageType;
 
@@ -63,14 +64,16 @@ public class GameThread extends GameLogic implements Runnable {
         NodeList moveNodeList = rootElement.getElementsByTagName("move");
         Node moveNode = moveNodeList.item(0);
         if (moveNode == null) {
-//            logger.error("Provided xml is invalid: no move node");
+            if (Parameters.getInstance().isDebug())
+                logger.error("Provided xml is invalid: no move node");
         } else {
             Element moveElement = (Element) moveNode;
             String moveDir = moveElement.getElementsByTagName("dir").item(0).getTextContent();
             Integer moveLine = Integer.parseInt(moveElement.getElementsByTagName("line").item(0).getTextContent());
             boolean firstPlayer = channel.equals(channel1);
             String player = firstPlayer ? "player1" : "player2";
-//            logger.info("Player " + player + " doing move : " + moveDir + " line = " + moveLine);
+            if (Parameters.getInstance().isDebug())
+                logger.info("Player " + player + " doing move : " + moveDir + " line = " + moveLine);
 
             if (firstPlayer)
                 channel2.write(MessageFactory.createMoveMessage(moveDir, moveLine));
@@ -108,7 +111,10 @@ public class GameThread extends GameLogic implements Runnable {
                 channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
                 channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
             } catch (GameOverException e) {
-//                logger.debug("Game is over");
+                if (Parameters.getInstance().isDebug())
+                    logger.debug("Game is over");
+                GameWorker.getInstance().removePlayerGame(channel1);
+                GameWorker.getInstance().removePlayerGame(channel2);
             }
         }
     }

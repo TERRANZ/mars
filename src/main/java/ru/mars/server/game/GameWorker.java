@@ -5,6 +5,7 @@ import org.jboss.netty.channel.Channel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
+import ru.mars.server.Parameters;
 import ru.mars.server.network.message.MessageFactory;
 import ru.mars.server.network.message.MessageType;
 import ru.mars.server.parser.PlayerParser;
@@ -22,10 +23,9 @@ import java.util.concurrent.Future;
  */
 public class GameWorker {
     private static GameWorker instance = new GameWorker();
-//    private Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = Logger.getLogger(this.getClass());
     private Map<Channel, GameState> gameStateMap = new WeakHashMap<>();
     private Map<Channel, Player> playerMap = new WeakHashMap<>();
-    private Map<Future, Channel> finders = new WeakHashMap<>();
     private Map<Channel, GameThread> gameThreadMap = new WeakHashMap<>();
     protected PairFinder pairFinder;
 
@@ -45,15 +45,18 @@ public class GameWorker {
 
     public synchronized void removePlayer(Channel channel) {
         if (playerMap.containsKey(channel)) {
-            if (gameThreadMap.get(channel) != null)
+            if (gameThreadMap.get(channel) != null) {
                 gameThreadMap.get(channel).playerDisconnect(channel);
+                gameThreadMap.remove(channel);
+            }
             gameStateMap.remove(channel);
             playerMap.remove(channel);
         }
     }
 
     public synchronized void handlePlayerCommand(Channel channel, String xml) {
-//        logger.info("Received xml = " + xml + " from channel " + channel.toString());
+        if (Parameters.getInstance().isDebug())
+            logger.info("Received xml = " + xml + " from channel " + channel.toString());
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = null;
         Document doc = null;
@@ -64,7 +67,8 @@ public class GameWorker {
             doc = dBuilder.parse(is);
             doc.getDocumentElement().normalize();
         } catch (Exception e) {
-//            logger.error("Unable to parse xml", e);
+            if (Parameters.getInstance().isDebug())
+                logger.error("Unable to parse xml", e);
         }
 
         if (doc != null) {
@@ -82,19 +86,14 @@ public class GameWorker {
                     PlayerParser.parse(playerMap.get(channel), root);
                     gameStateMap.put(channel, GameState.LOGGED_IN);
                     channel.write(MessageFactory.createWaitMessage());
-//                    logger.info("Received player info: " + playerMap.get(channel).toString());
+                    if (Parameters.getInstance().isDebug())
+                        logger.info("Received player info: " + playerMap.get(channel).toString());
                 }
                 break;
                 case MessageType.C_PLAYER_CANCEL_WAIT: {
                     if (!gameStateMap.get(channel).equals(GameState.LOGGED_IN))
                         return;//TODO: exception?
-//                    logger.info("Player cancelled waiting");
                     gameStateMap.put(channel, GameState.LOGIN);
-//                    gameStateMap.remove(channel);
-//                    channel.write(MessageFactory.createGameOverMessage());
-                    for (Future pairFinder : finders.keySet())
-                        if (finders.get(pairFinder).equals(channel))
-                            pairFinder.cancel(true);//стопаем поиск пары если игрок отказался
                 }
                 break;
                 case MessageType.C_READY_TO_PLAY: {
@@ -153,6 +152,12 @@ public class GameWorker {
     public Player getPlayer(Channel channel) {
         synchronized (playerMap) {
             return playerMap.get(channel);
+        }
+    }
+
+    public void removePlayerGame(Channel channel) {
+        synchronized (gameThreadMap) {
+            gameThreadMap.remove(channel);
         }
     }
 }
