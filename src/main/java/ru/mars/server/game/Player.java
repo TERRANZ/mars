@@ -22,6 +22,7 @@ public class Player {
     private Integer maxDefence = 0;
     private Integer maxHealth = 0;
     private Integer startMaxDamage = 0;
+    private String token = "";
 
     public Player() {
     }
@@ -163,6 +164,14 @@ public class Player {
         return startMaxDamage;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "Player{" +
@@ -182,6 +191,8 @@ public class Player {
                 ", attack=" + attack +
                 ", maxDefence=" + maxDefence +
                 ", maxHealth=" + maxHealth +
+                ", startMaxDamage=" + startMaxDamage +
+                ", token='" + token + '\'' +
                 '}';
     }
 }

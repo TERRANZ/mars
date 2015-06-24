@@ -19,7 +19,7 @@ import java.util.Random;
 public abstract class GameLogic {
     protected Channel channel1, channel2;
     protected Player player1, player2;
-    protected int[][] gemArray = new int[8][8];
+    protected int[][] gemArray = new int[6][6];
     protected Map<Channel, Boolean> playerReady = new HashMap<>();
     protected Logger logger = Logger.getLogger(this.getClass());
     protected boolean isSecondPlayerInMove = false;
@@ -29,8 +29,8 @@ public abstract class GameLogic {
     protected volatile boolean game = true;
 
     protected void initMap() {
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
+        for (int i = 0; i < 6; i++)
+            for (int j = 0; j < 6; j++)
                 gemArray[i][j] = randInt(1, 6);
         try {
             checkFields(true);
@@ -52,24 +52,30 @@ public abstract class GameLogic {
         return playerReady.get(channel1) && playerReady.get(channel2);
     }
 
+    public synchronized void playerSkip(Channel channel) {
+        isSecondPlayerInMove = !isSecondPlayerInMove;
+        channel1.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
+        channel2.write(MessageFactory.createSetMovePlayer(isSecondPlayerInMove));
+    }
+
     public synchronized void playerOk(Channel channel, Element root) {
 
     }
 
     protected void moveLineLeft(int count) {
         int el0 = gemArray[0][count];
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 6; i++) {
             if (i != 0) {
                 gemArray[i - 1][count] = gemArray[i][count];
             }
         }
-        gemArray[7][count] = el0;
+        gemArray[5][count] = el0;
     }
 
     protected void moveLineRight(int count) {
-        int el0 = gemArray[7][count];
-        for (int i = 7; i >= 0; i--) {
-            if (i != 7) {
+        int el0 = gemArray[5][count];
+        for (int i = 5; i >= 0; i--) {
+            if (i != 5) {
                 gemArray[i + 1][count] = gemArray[i][count];
             }
         }
@@ -83,52 +89,29 @@ public abstract class GameLogic {
                 gemArray[count][i - 1] = gemArray[count][i];
             }
         }
-        gemArray[count][7] = el0;
+        gemArray[count][5] = el0;
     }
 
     protected void moveLineDown(int count) {
-        int el0 = gemArray[count][7];
-        for (int i = 7; i >= 0; i--) {
-            if (i != 7) {
+        int el0 = gemArray[count][5];
+        for (int i = 5; i >= 0; i--) {
+            if (i != 5) {
                 gemArray[count][i + 1] = gemArray[count][i];
             }
         }
         gemArray[count][0] = el0;
     }
 
-    protected Boolean tryCheckVLine5(boolean update) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                int count = (gemArray[i][j]);
-                if (j + 4 <= 7) {
-                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3] && count == gemArray[i][j + 4]) {
-                        if (update) {
-                            gemArray[i][j] = randInt(1, 6);
-                            gemArray[i][j + 1] = randInt(1, 6);
-                            gemArray[i][j + 2] = randInt(1, 6);
-                            gemArray[i][j + 3] = randInt(1, 6);
-                            gemArray[i][j + 4] = randInt(1, 6);
-                            doAction(count, 2);
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     protected Boolean tryCheckVLine4(boolean remove) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
                 int count = (gemArray[i][j]);
-                if (j + 3 <= 7) {
-                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3]) {
+                if (j + 2 <= 5) {
+                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2]) {
                         if (remove) {
                             gemArray[i][j] = randInt(1, 6);
                             gemArray[i][j + 1] = randInt(1, 6);
                             gemArray[i][j + 2] = randInt(1, 6);
-                            gemArray[i][j + 3] = randInt(1, 6);
                             doAction(count, 1);
                         }
                         return true;
@@ -140,15 +123,14 @@ public abstract class GameLogic {
     }
 
     protected Boolean tryCheckVLine3(boolean remove) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
                 int count = (gemArray[i][j]);
-                if (j + 2 <= 7) {
-                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2]) {
+                if (j + 1 <= 5) {
+                    if (count == gemArray[i][j + 1]) {
                         if (remove) {
                             gemArray[i][j] = randInt(1, 6);
                             gemArray[i][j + 1] = randInt(1, 6);
-                            gemArray[i][j + 2] = randInt(1, 6);
                             doAction(count, 0);
                         }
                         return true;
@@ -159,40 +141,17 @@ public abstract class GameLogic {
         return false;
     }
 
-    protected Boolean tryCheckHLine5(boolean remove) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                //trace(i, j)
-                int count = (gemArray[i][j]);
-                if (i + 4 <= 7) {
-                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j] && count == gemArray[i + 4][j]) {
-                        if (remove) {
-                            gemArray[i][j] = randInt(1, 6);
-                            gemArray[i + 1][j] = randInt(1, 6);
-                            gemArray[i + 2][j] = randInt(1, 6);
-                            gemArray[i + 3][j] = randInt(1, 6);
-                            gemArray[i + 4][j] = randInt(1, 6);
-                            doAction(count, 2);
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
     protected Boolean tryCheckHLine4(boolean remove) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
                 int count = (gemArray[i][j]);
-                if (i + 3 <= 7) {
-                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j]) {
+                if (i + 2 <= 5) {
+                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j]) {
                         if (remove) {
                             gemArray[i][j] = randInt(1, 6);
                             gemArray[i + 1][j] = randInt(1, 6);
                             gemArray[i + 2][j] = randInt(1, 6);
-                            gemArray[i + 3][j] = randInt(1, 6);
                             doAction(count, 1);
                         }
                         return true;
@@ -204,11 +163,11 @@ public abstract class GameLogic {
     }
 
     protected Boolean tryCheckHLine3(boolean remove) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
                 int count = (gemArray[i][j]);
-                if (i + 2 <= 7) {
-                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j]) {
+                if (i + 1 <= 5) {
+                    if (count == gemArray[i + 1][j]) {
                         if (remove) {
                             gemArray[i][j] = randInt(1, 6);
                             gemArray[i + 1][j] = randInt(1, 6);
@@ -230,65 +189,48 @@ public abstract class GameLogic {
         boolean ret = false;
         while (linesFound > 0) {
             linesFound = 0;
-            if (tryCheckHLine5(false)) {
-                tryCheckHLine5(true);
+
+            if (tryCheckHLine4(false)) {
+                tryCheckHLine4(true);
                 linesFound++;
                 if (Parameters.getInstance().isDebug())
-                    logger.info("Checking fields: hline5");
+                    logger.info("Checking fields: hline4");
                 ret = true;
                 if (!init)
                     sendMoveStatus();
             } else {
-                if (tryCheckHLine4(false)) {
-                    tryCheckHLine4(true);
+                if (tryCheckHLine3(false)) {
+                    tryCheckHLine3(true);
                     linesFound++;
                     if (Parameters.getInstance().isDebug())
-                        logger.info("Checking fields: hline4");
+                        logger.info("Checking fields: hline3");
                     ret = true;
                     if (!init)
                         sendMoveStatus();
                 } else {
-                    if (tryCheckHLine3(false)) {
-                        tryCheckHLine3(true);
+                    if (tryCheckVLine4(false)) {
+                        tryCheckVLine4(true);
                         linesFound++;
                         if (Parameters.getInstance().isDebug())
-                            logger.info("Checking fields: hline3");
+                            logger.info("Checking fields: vline4");
                         ret = true;
                         if (!init)
                             sendMoveStatus();
                     } else {
-                        if (tryCheckVLine5(false)) {
-                            tryCheckVLine5(true);
+                        if (tryCheckVLine3(false)) {
+                            tryCheckVLine3(true);
                             linesFound++;
                             if (Parameters.getInstance().isDebug())
-                                logger.info("Checking fields: vline5");
+                                logger.info("Checking fields: vline3");
                             ret = true;
                             if (!init)
                                 sendMoveStatus();
-                        } else {
-                            if (tryCheckVLine4(false)) {
-                                tryCheckVLine4(true);
-                                linesFound++;
-                                if (Parameters.getInstance().isDebug())
-                                    logger.info("Checking fields: vline4");
-                                ret = true;
-                                if (!init)
-                                    sendMoveStatus();
-                            } else {
-                                if (tryCheckVLine3(false)) {
-                                    tryCheckVLine3(true);
-                                    linesFound++;
-                                    if (Parameters.getInstance().isDebug())
-                                        logger.info("Checking fields: vline3");
-                                    ret = true;
-                                    if (!init)
-                                        sendMoveStatus();
-                                }
-                            }
                         }
                     }
+
                 }
             }
+
         }
         return ret;
     }

@@ -34,6 +34,7 @@ public class PlayerParser {
         player.setMaxDefence(player.getDefence());
         player.setMaxHealth(player.getHealth());
         player.setName(playerElement.getElementsByTagName("name").item(0).getTextContent());
+        player.setToken(playerElement.getElementsByTagName("token").item(0).getTextContent());
     }
 
     public static String encode(String header, Player player) {

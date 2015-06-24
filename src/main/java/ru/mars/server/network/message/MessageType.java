@@ -17,6 +17,7 @@ public class MessageType {
     public static final int S_LINE_MOVE = 9;//движениие линии другому клиенту, передаём новыи ячейки, если надо, кто дальше ходит
     public static final int C_OK = 10;//клиент сообщает, что получил
     public static final int S_LINE_DAMAGE = 11;//дамаг игроку, передаём новыи ячейки, если надо, кто дальше ходит
+    public static final int C_SKIP_MOVE = 12;//игрок хочет пропустить ход
     public static final int S_GAME_OVER = 13;//игра закончена, сообщаем кто победил, кто проиграл, отсоединяем от сервера
     public static final int S_PLAYER_MOVE = 15;//движение линии для клиента
     public static final int S_SET_MOVE_PLAYER = 17;//сообщение номером игрока для следующего хода

@@ -117,6 +117,10 @@ public class GameWorker {
                     gameThreadMap.get(channel).playerOk(channel, root);
                 }
                 break;
+                case MessageType.C_SKIP_MOVE: {
+                    gameThreadMap.get(channel).playerSkip(channel);
+                }
+                break;
             }
         }
     }

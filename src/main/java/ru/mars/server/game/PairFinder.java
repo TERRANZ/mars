@@ -1,6 +1,5 @@
 package ru.mars.server.game;
 
-import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import ru.mars.server.network.message.MessageFactory;
 
@@ -14,26 +13,27 @@ public class PairFinder implements Runnable {
 
     @Override
     public void run() {
+        GameWorker gameWorker = GameWorker.getInstance();
         while (true) {
             try {
                 if (GameWorker.getInstance().getPlayerMap().size() > 1) {
                     Channel chan1 = null, chan2 = null;
-                    for (Channel channel : GameWorker.getInstance().getPlayerMap().keySet()) {
-                        if (GameWorker.getInstance().getPlayerState(channel).equals(GameState.LOGGED_IN))
+                    for (Channel channel : gameWorker.getPlayerMap().keySet()) {
+                        if (gameWorker.getPlayerState(channel).equals(GameState.LOGGED_IN))
                             if (chan1 == null)
                                 chan1 = channel;
-                            else if (chan2 == null && !chan1.equals(channel))
+                            else if (chan2 == null && !chan1.equals(channel) && !gameWorker.getPlayer(chan1).getToken().equals(gameWorker.getPlayer(channel).getToken()))
                                 chan2 = channel;
                         if (chan1 != null && chan2 != null) {
                             try {
                                 chan1.write(MessageFactory.createPairFoundMessage(1));
                                 chan2.write(MessageFactory.createPairFoundMessage(2));
-                                GameThread gameThread = new GameThread(chan1, chan2, GameWorker.getInstance().getPlayer(chan1), GameWorker.getInstance().getPlayer(chan2));
+                                GameThread gameThread = new GameThread(chan1, chan2, gameWorker.getPlayer(chan1), gameWorker.getPlayer(chan2));
                                 //добавляем для каналов игру
-                                GameWorker.getInstance().addGameThreadForChannel(chan1, gameThread);
-                                GameWorker.getInstance().addGameThreadForChannel(chan2, gameThread);
-                                GameWorker.getInstance().setPlayerState(chan1, GameState.GAME_LOADING);
-                                GameWorker.getInstance().setPlayerState(chan2, GameState.GAME_LOADING);
+                                gameWorker.addGameThreadForChannel(chan1, gameThread);
+                                gameWorker.addGameThreadForChannel(chan2, gameThread);
+                                gameWorker.setPlayerState(chan1, GameState.GAME_LOADING);
+                                gameWorker.setPlayerState(chan2, GameState.GAME_LOADING);
                             } catch (Exception e) {
 //                                logger.error("Unable to send pair message", e);
                             }
