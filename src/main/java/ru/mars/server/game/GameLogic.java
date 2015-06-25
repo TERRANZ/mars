@@ -182,6 +182,51 @@ public abstract class GameLogic {
         return false;
     }
 
+    protected Boolean tryCheckVLine5(boolean update) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int count = (gemArray[i][j]);
+                if (j + 4 <= 7) {
+                    if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3] && count == gemArray[i][j + 4]) {
+                        if (update) {
+                            gemArray[i][j] = randInt(1, 6);
+                            gemArray[i][j + 1] = randInt(1, 6);
+                            gemArray[i][j + 2] = randInt(1, 6);
+                            gemArray[i][j + 3] = randInt(1, 6);
+                            gemArray[i][j + 4] = randInt(1, 6);
+                            doAction(count, 2);
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    protected Boolean tryCheckHLine5(boolean remove) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                //trace(i, j)
+                int count = (gemArray[i][j]);
+                if (i + 4 <= 7) {
+                    if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j] && count == gemArray[i + 4][j]) {
+                        if (remove) {
+                            gemArray[i][j] = randInt(1, 6);
+                            gemArray[i + 1][j] = randInt(1, 6);
+                            gemArray[i + 2][j] = randInt(1, 6);
+                            gemArray[i + 3][j] = randInt(1, 6);
+                            gemArray[i + 4][j] = randInt(1, 6);
+                            doAction(count, 2);
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     protected boolean checkFields(boolean init) throws GameOverException {
         int linesFound = 1;
         if (Parameters.getInstance().isDebug())
@@ -189,48 +234,65 @@ public abstract class GameLogic {
         boolean ret = false;
         while (linesFound > 0) {
             linesFound = 0;
-
-            if (tryCheckHLine4(false)) {
-                tryCheckHLine4(true);
+            if (tryCheckHLine5(false)) {
+                tryCheckHLine5(true);
                 linesFound++;
                 if (Parameters.getInstance().isDebug())
-                    logger.info("Checking fields: hline4");
+                    logger.info("Checking fields: hline5");
                 ret = true;
                 if (!init)
                     sendMoveStatus();
             } else {
-                if (tryCheckHLine3(false)) {
-                    tryCheckHLine3(true);
+                if (tryCheckHLine4(false)) {
+                    tryCheckHLine4(true);
                     linesFound++;
                     if (Parameters.getInstance().isDebug())
-                        logger.info("Checking fields: hline3");
+                        logger.info("Checking fields: hline4");
                     ret = true;
                     if (!init)
                         sendMoveStatus();
                 } else {
-                    if (tryCheckVLine4(false)) {
-                        tryCheckVLine4(true);
+                    if (tryCheckHLine3(false)) {
+                        tryCheckHLine3(true);
                         linesFound++;
                         if (Parameters.getInstance().isDebug())
-                            logger.info("Checking fields: vline4");
+                            logger.info("Checking fields: hline3");
                         ret = true;
                         if (!init)
                             sendMoveStatus();
                     } else {
-                        if (tryCheckVLine3(false)) {
-                            tryCheckVLine3(true);
+                        if (tryCheckVLine5(false)) {
+                            tryCheckVLine5(true);
                             linesFound++;
                             if (Parameters.getInstance().isDebug())
-                                logger.info("Checking fields: vline3");
+                                logger.info("Checking fields: vline5");
                             ret = true;
                             if (!init)
                                 sendMoveStatus();
+                        } else {
+                            if (tryCheckVLine4(false)) {
+                                tryCheckVLine4(true);
+                                linesFound++;
+                                if (Parameters.getInstance().isDebug())
+                                    logger.info("Checking fields: vline4");
+                                ret = true;
+                                if (!init)
+                                    sendMoveStatus();
+                            } else {
+                                if (tryCheckVLine3(false)) {
+                                    tryCheckVLine3(true);
+                                    linesFound++;
+                                    if (Parameters.getInstance().isDebug())
+                                        logger.info("Checking fields: vline3");
+                                    ret = true;
+                                    if (!init)
+                                        sendMoveStatus();
+                                }
+                            }
                         }
                     }
-
                 }
             }
-
         }
         return ret;
     }
