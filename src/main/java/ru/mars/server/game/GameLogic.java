@@ -183,10 +183,10 @@ public abstract class GameLogic {
     }
 
     protected Boolean tryCheckVLine5(boolean update) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
                 int count = (gemArray[i][j]);
-                if (j + 4 <= 7) {
+                if (j + 4 <= 5) {
                     if (count == gemArray[i][j + 1] && count == gemArray[i][j + 2] && count == gemArray[i][j + 3] && count == gemArray[i][j + 4]) {
                         if (update) {
                             gemArray[i][j] = randInt(1, 6);
@@ -205,11 +205,11 @@ public abstract class GameLogic {
     }
 
     protected Boolean tryCheckHLine5(boolean remove) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
                 //trace(i, j)
                 int count = (gemArray[i][j]);
-                if (i + 4 <= 7) {
+                if (i + 4 <= 5) {
                     if (count == gemArray[i + 1][j] && count == gemArray[i + 2][j] && count == gemArray[i + 3][j] && count == gemArray[i + 4][j]) {
                         if (remove) {
                             gemArray[i][j] = randInt(1, 6);
